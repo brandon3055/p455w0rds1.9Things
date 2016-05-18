@@ -41,13 +41,13 @@ minecraft {
 }
 
 repositories {
-  maven {
-    url "http://dvs1.progwml6.com/files/maven"
-  }
+  maven { url "http://dvs1.progwml6.com/files/maven" }
+  maven { url = "http://chickenbones.net/maven" }
 }
 
 dependencies {
 	deobfCompile "mezz.jei:jei_1.9:+"
+	compile "codechickenodeChickenLib:1.9-2.0.1.30:deobf"
 }
 
 processResources
