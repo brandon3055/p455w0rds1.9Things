@@ -1,0 +1,11 @@
+//Items
+item.dankNullv0.name=/dank/null
+item.dankNullv1.name=/dank/null/II
+item.dankNullv2.name=/dank/null/III
+item.dankNullv3.name=/dank/null/IV
+item.dankNullv4.name=/dank/null/V
+item.dankNullv5.name=/dank/null/VI
+tile.dankNullBlock.name=/dank/null
+tile.partTerminal.name=ME Terminal
+item.p455w0rdshield.name=p455w0rd's Shield
+itemGroup.p455w0rdsthings=p455w0rd's Things
