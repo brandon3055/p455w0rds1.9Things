@@ -1,6 +1,0 @@
-{
-	"parent": "p455w0rdsthings:item/dankNull",
-    "textures": {
-        "0": "minecraft:blocks/glass_lime"
-    }
-}

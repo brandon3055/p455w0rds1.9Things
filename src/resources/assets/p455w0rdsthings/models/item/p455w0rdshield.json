@@ -164,7 +164,7 @@
             "predicate": {
                 "blocking": 1
             },
-            "model": "p455w0rdsthings:item/shield_blocking"
+            "model": "p455w0rdsthings:item/p455w0rdshield_blocking"
         }
     ]
 }
