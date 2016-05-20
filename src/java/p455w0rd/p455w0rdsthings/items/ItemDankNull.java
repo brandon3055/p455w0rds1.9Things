@@ -59,16 +59,22 @@ public class ItemDankNull extends Item {
 	@SideOnly(Side.CLIENT)
 	public void initModel() {
 		for (int i = 0; i < 6; i++) {
-			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
-			//ModelRegistryHelper.register(new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"), new OverrideBakedModel(BakedEnderPouchOverrideHandler.INSTANCE));
-			
+			//ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
+			try {
+				ModelRegistryHelper.register(new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"), new DankNullRenderer());
+			}
+			catch (ExceptionInInitializerError e) {
+				System.out.println("ERROR: " + e.getLocalizedMessage());
+			}
 		}
+		/*
 		try {
 			ModelRegistryHelper.registerItemRenderer(this, new DankNullRenderer());
 		}
 		catch (ExceptionInInitializerError e) {
 			System.out.println("ERROR: " + e.getLocalizedMessage());
 		}
+		*/
 	}
 
 	public String getItemStackDisplayName(ItemStack stack) {

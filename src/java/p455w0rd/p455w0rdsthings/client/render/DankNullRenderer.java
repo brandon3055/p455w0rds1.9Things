@@ -19,7 +19,6 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -30,8 +29,12 @@ import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
 public class DankNullRenderer implements IItemRenderer {
 	
-	//protected static RenderItem itemRenderer = new RenderItem(Minecraft.getMinecraft().renderEngine, Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(), Minecraft.getMinecraft().getItemColors());
+	protected static RenderItem itemRenderer = new RenderItem(Minecraft.getMinecraft().renderEngine, Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(), Minecraft.getMinecraft().getItemColors());
 
+	public DankNullRenderer() {
+		
+	}
+	
 	@Override
 	public Pair<? extends IBakedModel, Matrix4f> handlePerspective(TransformType cameraTransformType) {
 		return IPerspectiveAwareModel.MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK.getTransforms(), cameraTransformType);
@@ -85,13 +88,14 @@ public class DankNullRenderer implements IItemRenderer {
 		if (containedStack == null) {
 			return;
 		}
+		//IBakedModel holderModel = itemRenderer.getItemModelMesher().getItemModel(stack);
 		
-		Minecraft.getMinecraft().getItemRenderer().renderItem((EntityLivingBase) player, item, ItemCameraTransforms.TransformType.GROUND);
+		itemRenderer.renderItem(item, ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND);
 
 		if (containedStack != null && (containedStack.getItem() instanceof ItemBlock)) {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			GL11.glScalef(0.8f, 0.8f, 0.8f);
-			Minecraft.getMinecraft().getItemRenderer().renderItem((EntityLivingBase) player, containedStack, ItemCameraTransforms.TransformType.GROUND);
+			itemRenderer.renderItem(containedStack, ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND);
 		}
 		GL11.glPopMatrix();
 	}
