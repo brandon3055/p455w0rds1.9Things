@@ -47,6 +47,7 @@ import p455w0rd.p455w0rdsthings.util.ItemUtils;
 @SideOnly(Side.CLIENT)
 public class DankNullRenderer implements IItemRenderer {
 	private float timer = 0.0F;
+
 	@Override
 	public void renderItem(ItemStack item) {
 		if (!(item.getItem() instanceof ItemDankNull)) {
@@ -57,127 +58,96 @@ public class DankNullRenderer implements IItemRenderer {
 		//ItemModelMesher itemModelMesher = new net.minecraftforge.client.ItemModelMesherForge(Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager());
 		int index = ItemDankNull.getSelectedStackIndex(item);
 		ItemStack containedStack = ItemDankNull.getItemByIndex(item, index);
-		if (containedStack == null) {
-			return;
-		}
-		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(containedStack);
 		IBakedModel holderModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager().getModel(new ModelResourceLocation(item.getItem().getRegistryName() + "" + item.getItemDamage(), "inventory"));
 		IBakedModel holderModel2 = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(item);
-		
 		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
-        textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.alphaFunc(516, 0.1F);
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.pushMatrix();
-        // TODO: check if negative scale is a thing
-        GlStateManager.scale(0.5D, 0.5D, 0.5D);
-        GlStateManager.translate(0.5D, 1.0D, 0.5D);
-        if (timer >= 360.1F) {
-        	timer = 0.0F;
-        }
-        timer += 0.5F;
-        GlStateManager.rotate(timer, 1.0F, 1.0F, 1.0F);
-        model = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.NONE, false);
-
-        renderItem(item, model);
-        GlStateManager.translate(1.0D, 1.0D, 1.0D);
-        GlStateManager.scale(1.0D, 1.0D, 1.0D);
-        
-        GlStateManager.cullFace(GlStateManager.CullFace.BACK);
-        GlStateManager.popMatrix();
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.disableBlend();
-        
-        GlStateManager.enableRescaleNormal();
-        //GlStateManager.alphaFunc(516, 0.1F);
-        //GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        
-        GlStateManager.pushMatrix();
-        renderModel(holderModel, -1, item);
-        GlStateManager.popMatrix();
-        
-        GlStateManager.cullFace(GlStateManager.CullFace.BACK);
-        GlStateManager.disableRescaleNormal();
-        //GlStateManager.disableBlend();
-        
-        textureManager.bindTexture(TextureMap.locationBlocksTexture);
-        textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+		textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
 		
-		/*
-		RenderItem itemRenderer = new RenderItem(Minecraft.getMinecraft().renderEngine, Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(), Minecraft.getMinecraft().getItemColors());
-		GL11.glPushMatrix();
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		ItemStack stack = ItemUtils.getDankNullStack(player.inventory);
-		int index = ItemDankNull.getSelectedStackIndex(stack);
-		ItemStack containedStack = ItemDankNull.getItemByIndex(stack, index);
-		if (containedStack == null) {
-			return;
-		}
-		IBakedModel holderModel = itemRenderer.getItemModelMesher().getItemModel(stack);
-		
-		itemRenderer.renderItem(item, holderModel);
+		if (containedStack != null) {
+			IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(containedStack);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.enableRescaleNormal();
+			GlStateManager.alphaFunc(516, 0.1F);
+			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+			GlStateManager.pushMatrix();
+			// TODO: check if negative scale is a thing
+			GlStateManager.scale(0.5D, 0.5D, 0.5D);
+			GlStateManager.translate(0.5D, 1.0D, 0.5D);
+			if (timer >= 360.1F) {
+				timer = 0.0F;
+			}
+			timer += 0.5F;
+			GlStateManager.rotate(timer, 1.0F, 1.0F, 1.0F);
+			model = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.NONE, false);
 
-		if (containedStack != null && (containedStack.getItem() instanceof ItemBlock)) {
-			IBakedModel stackModel = itemRenderer.getItemModelMesher().getItemModel(containedStack);
-			GL11.glTranslated(0.5, 0.5, 0.5);
-			GL11.glScalef(0.8f, 0.8f, 0.8f);
-			itemRenderer.renderItem(containedStack, stackModel);
+			renderItem(item, model);
+			GlStateManager.translate(1.0D, 1.0D, 1.0D);
+			GlStateManager.scale(1.0D, 1.0D, 1.0D);
+
+			GlStateManager.cullFace(GlStateManager.CullFace.BACK);
+			GlStateManager.popMatrix();
+			GlStateManager.disableRescaleNormal();
+			GlStateManager.disableBlend();
 		}
-		GL11.glPopMatrix();
-		*/
+		GlStateManager.enableRescaleNormal();
+		//GlStateManager.alphaFunc(516, 0.1F);
+		//GlStateManager.enableBlend();
+		//GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
+		GlStateManager.pushMatrix();
+		renderModel(holderModel, -1, item);
+		GlStateManager.popMatrix();
+
+		GlStateManager.cullFace(GlStateManager.CullFace.BACK);
+		GlStateManager.disableRescaleNormal();
+		//GlStateManager.disableBlend();
+
+		textureManager.bindTexture(TextureMap.locationBlocksTexture);
+		textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
 	}
-	
+
 	private void renderItem(ItemStack stack, IBakedModel model) {
 		this.renderModel(model, -1, stack);
 	}
-	
-	private void renderModel(IBakedModel model, int color, ItemStack stack)
-    {
-        Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
-        vertexbuffer.begin(7, DefaultVertexFormats.ITEM);
 
-        for (EnumFacing enumfacing : EnumFacing.values())
-        {
-            this.renderQuads(vertexbuffer, model.getQuads((IBlockState)null, enumfacing, 0L), color, stack);
-        }
+	private void renderModel(IBakedModel model, int color, ItemStack stack) {
+		Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		vertexbuffer.begin(7, DefaultVertexFormats.ITEM);
 
-        this.renderQuads(vertexbuffer, model.getQuads((IBlockState)null, (EnumFacing)null, 0L), color, stack);
-        tessellator.draw();
-    }
-	
-	private void renderQuads(VertexBuffer renderer, List<BakedQuad> quads, int color, ItemStack stack)
-    {
-        boolean flag = color == -1 && stack != null;
-        int i = 0;
+		for (EnumFacing enumfacing : EnumFacing.values()) {
+			this.renderQuads(vertexbuffer, model.getQuads((IBlockState) null, enumfacing, 0L), color, stack);
+		}
 
-        for (int j = quads.size(); i < j; ++i)
-        {
-            BakedQuad bakedquad = (BakedQuad)quads.get(i);
-            int k = color;
+		this.renderQuads(vertexbuffer, model.getQuads((IBlockState) null, (EnumFacing) null, 0L), color, stack);
+		tessellator.draw();
+	}
 
-            if (flag && bakedquad.hasTintIndex())
-            {
-            	ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-                k = itemColors.getColorFromItemstack(stack, bakedquad.getTintIndex());
+	private void renderQuads(VertexBuffer renderer, List<BakedQuad> quads, int color, ItemStack stack) {
+		boolean flag = color == -1 && stack != null;
+		int i = 0;
 
-                if (EntityRenderer.anaglyphEnable)
-                {
-                    k = TextureUtil.anaglyphColor(k);
-                }
+		for (int j = quads.size(); i < j; ++i) {
+			BakedQuad bakedquad = (BakedQuad) quads.get(i);
+			int k = color;
 
-                k = k | -16777216;
-            }
+			if (flag && bakedquad.hasTintIndex()) {
+				ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
+				k = itemColors.getColorFromItemstack(stack, bakedquad.getTintIndex());
 
-            net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, bakedquad, k);
-        }
-    }
-	
+				if (EntityRenderer.anaglyphEnable) {
+					k = TextureUtil.anaglyphColor(k);
+				}
+
+				k = k | -16777216;
+			}
+
+			net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, bakedquad, k);
+		}
+	}
+
 	@Override
 	public Pair<? extends IBakedModel, Matrix4f> handlePerspective(TransformType cameraTransformType) {
 		return IPerspectiveAwareModel.MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK.getTransforms(), cameraTransformType);
