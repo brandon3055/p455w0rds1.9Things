@@ -3,14 +3,12 @@ package p455w0rd.p455w0rdsthings.items;
 import java.util.List;
 import com.google.common.collect.Lists;
 
-import codechicken.lib.render.ModelRegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -36,8 +34,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import p455w0rd.p455w0rdsthings.Globals;
-import p455w0rd.p455w0rdsthings.ModItems;
 import p455w0rd.p455w0rdsthings.client.render.DankNullRenderer;
+import p455w0rd.p455w0rdsthings.client.render.PModelRegistryHelper;
 import p455w0rd.p455w0rdsthings.handlers.GuiHandler;
 import p455w0rd.p455w0rdsthings.handlers.PacketHandler;
 import p455w0rd.p455w0rdsthings.network.PacketSetSelectedItem;
@@ -46,7 +44,6 @@ import p455w0rd.p455w0rdsthings.proxy.CommonProxy;
 public class ItemDankNull extends Item {
 
 	private final String name = "dankNull";
-	DankNullRenderer dankNullRenderer;
 
 	public ItemDankNull() {
 		setRegistryName(this.name);
@@ -56,23 +53,20 @@ public class ItemDankNull extends Item {
 		setMaxDamage(0);
 		setCreativeTab(CreativeTabs.tabMisc);
 		setCreativeTab(CommonProxy.creativeTab);
-		dankNullRenderer = new DankNullRenderer();
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void initModel() {
 		for (int i = 0; i < 6; i++) {
-			//ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
-				ModelRegistryHelper.register(new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"), (IBakedModel) dankNullRenderer);
+			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
+				//ModelRegistryHelper.register(new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"), (IBakedModel) dankNullRenderer);
+			try {
+				PModelRegistryHelper.registerDankNullRenderer(this, DankNullRenderer.INSTANCE, i);
+			}
+			catch (ExceptionInInitializerError e) {
+				System.out.println("ERROR: " + e.getLocalizedMessage());
+			}
 		}
-		/*
-		try {
-			ModelRegistryHelper.registerItemRenderer(this, new DankNullRenderer());
-		}
-		catch (ExceptionInInitializerError e) {
-			System.out.println("ERROR: " + e.getLocalizedMessage());
-		}
-		*/
 	}
 
 	public String getItemStackDisplayName(ItemStack stack) {

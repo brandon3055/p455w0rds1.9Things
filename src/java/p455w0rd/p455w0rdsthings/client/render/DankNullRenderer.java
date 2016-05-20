@@ -34,6 +34,8 @@ public class DankNullRenderer implements IItemRenderer {
 	
 	protected static RenderItem itemRenderer = new RenderItem(Minecraft.getMinecraft().renderEngine, Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager(), Minecraft.getMinecraft().getItemColors());
 	
+	public static final DankNullRenderer INSTANCE = new DankNullRenderer();
+	
 	public DankNullRenderer() {
 	}
 	
@@ -90,14 +92,15 @@ public class DankNullRenderer implements IItemRenderer {
 		if (containedStack == null) {
 			return;
 		}
-		//IBakedModel holderModel = itemRenderer.getItemModelMesher().getItemModel(stack);
+		IBakedModel holderModel = itemRenderer.getItemModelMesher().getItemModel(stack);
 		
-		itemRenderer.renderItem(item, ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND);
+		itemRenderer.renderItem(item, holderModel);
 
 		if (containedStack != null && (containedStack.getItem() instanceof ItemBlock)) {
+			IBakedModel stackModel = itemRenderer.getItemModelMesher().getItemModel(containedStack);
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			GL11.glScalef(0.8f, 0.8f, 0.8f);
-			itemRenderer.renderItem(containedStack, ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND);
+			itemRenderer.renderItem(containedStack, stackModel);
 		}
 		GL11.glPopMatrix();
 	}
