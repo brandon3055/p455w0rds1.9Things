@@ -43,7 +43,7 @@ import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
 @SideOnly(Side.CLIENT)
 public class DankNullRenderer implements IItemRenderer {
-	
+	private float timer = 0.0F;
 	@Override
 	public void renderItem(ItemStack item) {
 		if (!(item.getItem() instanceof ItemDankNull)) {
@@ -52,7 +52,12 @@ public class DankNullRenderer implements IItemRenderer {
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		ItemStack stack = ItemUtils.getDankNullStack(player.inventory);
 		//ItemModelMesher itemModelMesher = new net.minecraftforge.client.ItemModelMesherForge(Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager());
-		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(stack);
+		int index = ItemDankNull.getSelectedStackIndex(item);
+		ItemStack containedStack = ItemDankNull.getItemByIndex(item, index);
+		if (containedStack == null) {
+			return;
+		}
+		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(containedStack);
 
 		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
@@ -64,9 +69,18 @@ public class DankNullRenderer implements IItemRenderer {
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.pushMatrix();
         // TODO: check if negative scale is a thing
-        model = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND, false);
+        GlStateManager.scale(0.5D, 0.5D, 0.5D);
+        GlStateManager.translate(0.5D, 1.0D, 0.5D);
+        if (timer >= 360.1F) {
+        	timer = 0.0F;
+        }
+        timer += 0.5F;
+        GlStateManager.rotate(timer, 0.5F, 0.5F, 0.5F);
+        model = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.NONE, false);
 
-        renderItem(stack, model);
+        renderItem(item, model);
+        GlStateManager.translate(1.0D, 1.0D, 1.0D);
+        GlStateManager.scale(1.0D, 1.0D, 1.0D);
         GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         GlStateManager.popMatrix();
         GlStateManager.disableRescaleNormal();
