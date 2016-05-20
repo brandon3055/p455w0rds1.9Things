@@ -64,7 +64,7 @@ public class ItemDankNull extends Item {
 			
 		}
 		try {
-			ModelRegistryHelper.registerItemRenderer(ModItems.dankNullItem, new DankNullRenderer());
+			ModelRegistryHelper.registerItemRenderer(this, new DankNullRenderer());
 		}
 		catch (ExceptionInInitializerError e) {
 			System.out.println("ERROR: " + e.getLocalizedMessage());
