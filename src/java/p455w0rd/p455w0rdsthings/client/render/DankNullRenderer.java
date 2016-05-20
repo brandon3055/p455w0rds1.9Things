@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -31,6 +32,7 @@ import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -38,6 +40,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import p455w0rd.p455w0rdsthings.Globals;
 import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
@@ -58,7 +61,9 @@ public class DankNullRenderer implements IItemRenderer {
 			return;
 		}
 		IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(containedStack);
-
+		IBakedModel holderModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getModelManager().getModel(new ModelResourceLocation(item.getItem().getRegistryName() + "" + item.getItemDamage(), "inventory"));
+		IBakedModel holderModel2 = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(item);
+		
 		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
         textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
@@ -75,16 +80,31 @@ public class DankNullRenderer implements IItemRenderer {
         	timer = 0.0F;
         }
         timer += 0.5F;
-        GlStateManager.rotate(timer, 0.5F, 0.5F, 0.5F);
+        GlStateManager.rotate(timer, 1.0F, 1.0F, 1.0F);
         model = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.NONE, false);
 
         renderItem(item, model);
         GlStateManager.translate(1.0D, 1.0D, 1.0D);
         GlStateManager.scale(1.0D, 1.0D, 1.0D);
+        
         GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         GlStateManager.popMatrix();
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableBlend();
+        
+        GlStateManager.enableRescaleNormal();
+        //GlStateManager.alphaFunc(516, 0.1F);
+        //GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        
+        GlStateManager.pushMatrix();
+        renderModel(holderModel, -1, item);
+        GlStateManager.popMatrix();
+        
+        GlStateManager.cullFace(GlStateManager.CullFace.BACK);
+        GlStateManager.disableRescaleNormal();
+        //GlStateManager.disableBlend();
+        
         textureManager.bindTexture(TextureMap.locationBlocksTexture);
         textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
 		
