@@ -1,11 +1,9 @@
 package p455w0rd.p455w0rdsthings.client.gui;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -15,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -27,7 +24,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -36,6 +32,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import p455w0rd.p455w0rdsthings.Globals;
 import p455w0rd.p455w0rdsthings.container.DankNullSlot;
+import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
 public class GuiDankNull extends GuiContainer {
@@ -52,10 +49,12 @@ public class GuiDankNull extends GuiContainer {
 	private boolean isRightMouseClick;
 	private int touchUpX;
 	private int touchUpY;
+	private int numRows = 0;
+	private InventoryPlayer playerInv;
 
 	protected int xSize = 176;
 	/** The Y size of the inventory window in pixels. */
-	protected int ySize = 222;
+	protected int ySize = 132;
 	/** A list of the players inventory slots */
 	public Container inventorySlots;
 	/**
@@ -68,34 +67,30 @@ public class GuiDankNull extends GuiContainer {
 	protected int guiTop;
 	/** holds the slot currently hovered */
 	private Slot clickedSlot;
-	private Slot currentDragTargetSlot;
-	private long dragItemDropDelay;
 	protected final Set<Slot> dragSplittingSlots = Sets.<Slot> newHashSet();
 	private int dragSplittingLimit;
-	private int dragSplittingButton;
-	private boolean ignoreMouseUp;
-	private long lastClickTime;
-	private Slot lastClickSlot;
-	private int lastClickButton;
-	private boolean doubleClick;
-	private ItemStack shiftClickedSlot;
 
-	public GuiDankNull(final Container inventorySlotsIn) {
+	public GuiDankNull(final Container inventorySlotsIn, InventoryPlayer playerInv) {
 		super(inventorySlotsIn);
 		this.inventorySlots = inventorySlotsIn;
-		this.ignoreMouseUp = true;
-		
+		this.playerInv = playerInv;
+		if (ItemUtils.getDankNullStack(playerInv) == null) {
+			this.numRows = 6;
+		}
+		else {
+			this.numRows = ItemUtils.getDankNullStack(playerInv).getItemDamage();
+		}
+		this.ySize += numRows * 18;
 	}
-	
+
 	@Override
-	public void initGui()
-    {
-        super.initGui();
-        this.setItemRender(pRenderItem);
-        this.guiLeft = (this.width - this.xSize) / 2;
-        this.guiTop = (this.height - this.ySize) / 2;
-    }
-	
+	public void initGui() {
+		super.initGui();
+		this.setItemRender(pRenderItem);
+		this.guiLeft = (this.width - this.xSize) / 2;
+		this.guiTop = (this.height - this.ySize) / 2;
+	}
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GL11.glEnable(GL11.GL_BLEND);
@@ -110,8 +105,15 @@ public class GuiDankNull extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.mc.fontRendererObj.drawString("/dank/null", 7, 5, 0xFFFFFF);
-		this.mc.fontRendererObj.drawString(I18n.format("container.inventory"), 7, this.ySize - 93, 0xFFFFFF);
+		int fontColor = 0xFFFFFF;
+		if (ItemUtils.getDankNullStack(playerInv).getItemDamage() == 0) {
+			fontColor = 0x000;
+		}
+		this.mc.fontRendererObj.drawString(ItemUtils.getDankNullStack(playerInv).getDisplayName(), 7, 7, fontColor);
+		this.mc.fontRendererObj.drawString(I18n.format("container.inventory"), 7, this.ySize - 93, fontColor);
+		if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
+			this.mc.fontRendererObj.drawString("=Selected", this.xSize - 55, 7, fontColor);
+		}
 	}
 
 	protected List<DankNullSlot> getSlots() {
@@ -126,84 +128,71 @@ public class GuiDankNull extends GuiContainer {
 
 	private void drawSlot(final Slot slotIn) {
 		int i = slotIn.xDisplayPosition;
-        int j = slotIn.yDisplayPosition;
-        ItemStack itemstack = slotIn.getStack();
-        boolean flag = false;
-        boolean flag1 = slotIn == this.clickedSlot && this.draggedStack != null && !this.isRightMouseClick;
-        ItemStack itemstack1 = this.mc.thePlayer.inventory.getItemStack();
-        String s = null;
+		int j = slotIn.yDisplayPosition;
+		ItemStack itemstack = slotIn.getStack();
+		boolean flag = false;
+		boolean flag1 = slotIn == this.clickedSlot && this.draggedStack != null && !this.isRightMouseClick;
+		ItemStack itemstack1 = this.mc.thePlayer.inventory.getItemStack();
+		String s = null;
 
-        if (slotIn == this.clickedSlot && this.draggedStack != null && this.isRightMouseClick && itemstack != null)
-        {
-            itemstack = itemstack.copy();
-            itemstack.stackSize /= 2;
-        }
-        else if (this.dragSplitting && this.dragSplittingSlots.contains(slotIn) && itemstack1 != null)
-        {
-            if (this.dragSplittingSlots.size() == 1)
-            {
-                return;
-            }
+		if (slotIn == this.clickedSlot && this.draggedStack != null && this.isRightMouseClick && itemstack != null) {
+			itemstack = itemstack.copy();
+			itemstack.stackSize /= 2;
+		}
+		else if (this.dragSplitting && this.dragSplittingSlots.contains(slotIn) && itemstack1 != null) {
+			if (this.dragSplittingSlots.size() == 1) {
+				return;
+			}
 
-            if (Container.canAddItemToSlot(slotIn, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slotIn))
-            {
-                itemstack = itemstack1.copy();
-                flag = true;
-                Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack, slotIn.getStack() == null ? 0 : slotIn.getStack().stackSize);
+			if (Container.canAddItemToSlot(slotIn, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slotIn)) {
+				itemstack = itemstack1.copy();
+				flag = true;
+				Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack, slotIn.getStack() == null ? 0 : slotIn.getStack().stackSize);
 
-                if (itemstack.stackSize > itemstack.getMaxStackSize())
-                {
-                    s = TextFormatting.YELLOW + "" + itemstack.getMaxStackSize();
-                    itemstack.stackSize = itemstack.getMaxStackSize();
-                }
+				if (itemstack.stackSize > itemstack.getMaxStackSize()) {
+					s = TextFormatting.YELLOW + "" + itemstack.getMaxStackSize();
+					itemstack.stackSize = itemstack.getMaxStackSize();
+				}
 
-                if (itemstack.stackSize > slotIn.getItemStackLimit(itemstack))
-                {
-                    s = TextFormatting.YELLOW + "" + slotIn.getItemStackLimit(itemstack);
-                    itemstack.stackSize = slotIn.getItemStackLimit(itemstack);
-                }
-            }
-            else
-            {
-                this.dragSplittingSlots.remove(slotIn);
-                this.func_146980_g();
-            }
-        }
+				if (itemstack.stackSize > slotIn.getItemStackLimit(itemstack)) {
+					s = TextFormatting.YELLOW + "" + slotIn.getItemStackLimit(itemstack);
+					itemstack.stackSize = slotIn.getItemStackLimit(itemstack);
+				}
+			}
+			else {
+				this.dragSplittingSlots.remove(slotIn);
+				this.func_146980_g();
+			}
+		}
 
-        this.zLevel = 100.0F;
-        this.itemRender.zLevel = 100.0F;
+		this.zLevel = 100.0F;
+		this.itemRender.zLevel = 100.0F;
 
-        if (itemstack == null && slotIn.canBeHovered())
-        {
-            TextureAtlasSprite textureatlassprite = slotIn.getBackgroundSprite();
+		if (itemstack == null && slotIn.canBeHovered()) {
+			TextureAtlasSprite textureatlassprite = slotIn.getBackgroundSprite();
 
-            if (textureatlassprite != null)
-            {
-                GlStateManager.disableLighting();
-                this.mc.getTextureManager().bindTexture(slotIn.getBackgroundLocation());
-                this.drawTexturedModalRect(i, j, textureatlassprite, 16, 16);
-                GlStateManager.enableLighting();
-                flag1 = true;
-            }
-        }
+			if (textureatlassprite != null) {
+				GlStateManager.disableLighting();
+				this.mc.getTextureManager().bindTexture(slotIn.getBackgroundLocation());
+				this.drawTexturedModalRect(i, j, textureatlassprite, 16, 16);
+				GlStateManager.enableLighting();
+				flag1 = true;
+			}
+		}
 
-        if (!flag1)
-        {
-            if (flag)
-            {
-                drawRect(i, j, i + 16, j + 16, -2130706433);
-            }
+		if (!flag1) {
+			if (flag) {
+				drawRect(i, j, i + 16, j + 16, -2130706433);
+			}
 
-            GlStateManager.enableDepth();
-            this.itemRender.renderItemAndEffectIntoGUI(this.mc.thePlayer, itemstack, i, j);
-            this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, itemstack, i, j, s);
-        }
+			GlStateManager.enableDepth();
+			this.itemRender.renderItemAndEffectIntoGUI(this.mc.thePlayer, itemstack, i, j);
+			this.itemRender.renderItemOverlayIntoGUI(this.fontRendererObj, itemstack, i, j, s);
+		}
 
-        this.itemRender.zLevel = 0.0F;
-        this.zLevel = 0.0F;
+		this.itemRender.zLevel = 0.0F;
+		this.zLevel = 0.0F;
 	}
-
-
 
 	private void drawItemStack(ItemStack stack, int x, int y, String altText) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -224,53 +213,68 @@ public class GuiDankNull extends GuiContainer {
 		this.zLevel = 0.0F;
 		this.itemRender.zLevel = 0.0F;
 	}
-	
+
 	@Override
-	public void drawDefaultBackground()
-    {
-        this.drawWorldBackground(0);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
-    }
-	
-	public void drawWorldBackground(int tint)
-    {
-        if (this.mc.theWorld != null)
-        {
-            //this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
-        	//this.drawGradientRect(0, 0, this.width, this.height, -1072689136, 0x000000FF);
-        	int topHeight = ((this.height - this.ySize) / 2) + 1;
-        	int leftWidth = ((this.width - this.ySize) / 2) + 24;
-        	int leftHeight = this.height - (topHeight * 2) + topHeight;
-        	int rightOffset = this.width + leftWidth;
-        	Gui.drawRect(0, 0, this.width, topHeight, 0xBB000000);
-        	Gui.drawRect(0, topHeight, leftWidth, leftHeight, 0xBB000000);
-        	Gui.drawRect(rightOffset, topHeight, leftWidth + this.xSize - 2, leftHeight, 0xBB000000);
-        	Gui.drawRect(0, this.height - topHeight, this.width, this.height, 0xBB000000);
-        }
-        else
-        {
-            this.drawBackground(tint);
-        }
-    }
-	
+	public void drawDefaultBackground() {
+		//this.drawWorldBackground(0);
+		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
+	}
+
+	public void drawWorldBackground(int tint) {
+		if (this.mc.theWorld != null) {
+			//this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
+			//this.drawGradientRect(0, 0, this.width, this.height, -1072689136, 0x000000FF);
+			int leftWidth = 0;
+			int topHeight = ((this.height - this.ySize) / 2) + 1;
+			if (this.numRows == 5) {
+				leftWidth = (((this.mc.displayWidth / 2) - this.ySize) / 2) + 24;
+			}
+			else if (this.numRows == 4) {
+				leftWidth = (((this.mc.displayWidth / 2) - this.ySize) / 2) + 15;
+			}
+			else if (this.numRows == 3) {
+				leftWidth = (((this.mc.displayWidth / 2) - this.ySize) / 2) + 6;
+			}
+			else if (this.numRows == 2) {
+				leftWidth = (((this.mc.displayWidth / 2) - this.ySize) / 2) - 3;
+			}
+			else if (this.numRows == 1) {
+				leftWidth = (((this.mc.displayWidth / 2) - this.ySize) / 2) - 12;
+			}
+			else if (this.numRows == 0) {
+				leftWidth = (((this.mc.displayWidth / 2) - this.ySize) / 2) - 21;
+			}
+			else {
+				leftWidth = (((this.mc.displayWidth / 2) - this.ySize) / 2);
+			}
+			int leftHeight = this.height - (topHeight * 2) + topHeight - 1;
+			int rightOffset = (this.mc.displayWidth / 2) + leftWidth;
+			Gui.drawRect(0, 0, (this.mc.displayWidth / 2), topHeight, 0xBB000000);
+			Gui.drawRect(0, topHeight, leftWidth, leftHeight, 0xBB000000);
+			Gui.drawRect(rightOffset, topHeight, leftWidth + this.xSize - 2, leftHeight, 0xBB000000);
+			Gui.drawRect(0, this.height - topHeight - 1, (this.mc.displayWidth / 2), this.height, 0xBB000000);
+		}
+		else {
+			this.drawBackground(tint);
+		}
+	}
+
 	@Override
-	public void drawBackground(int tint)
-    {
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-        Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
-        this.mc.getTextureManager().bindTexture(optionsBackground);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
-        float f = 32.0F;
-        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        vertexbuffer.pos(0.0D, (double)this.height, 0.0D).tex(0.0D, (double)((float)this.height / 32.0F + (float)tint)).color(64, 64, 64, 255).endVertex();
-        vertexbuffer.pos((double)this.width, (double)this.height, 0.0D).tex((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)tint)).color(64, 64, 64, 255).endVertex();
-        vertexbuffer.pos((double)this.width, 0.0D, 0.0D).tex((double)((float)this.width / 32.0F), (double)tint).color(64, 64, 64, 255).endVertex();
-        vertexbuffer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, (double)tint).color(64, 64, 64, 255).endVertex();
-        tessellator.draw();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-    }
+	public void drawBackground(int tint) {
+		GlStateManager.disableLighting();
+		GlStateManager.disableFog();
+		Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		this.mc.getTextureManager().bindTexture(optionsBackground);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
+		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+		vertexbuffer.pos(0.0D, (double) this.height, 0.0D).tex(0.0D, (double) ((float) this.height / 32.0F + (float) tint)).color(64, 64, 64, 255).endVertex();
+		vertexbuffer.pos((double) this.width, (double) this.height, 0.0D).tex((double) ((float) this.width / 32.0F), (double) ((float) this.height / 32.0F + (float) tint)).color(64, 64, 64, 255).endVertex();
+		vertexbuffer.pos((double) this.width, 0.0D, 0.0D).tex((double) ((float) this.width / 32.0F), (double) tint).color(64, 64, 64, 255).endVertex();
+		vertexbuffer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, (double) tint).color(64, 64, 64, 255).endVertex();
+		tessellator.draw();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -291,11 +295,19 @@ public class GuiDankNull extends GuiContainer {
 		for (int j2 = 0; j2 < this.labelList.size(); ++j2) {
 			((GuiLabel) this.labelList.get(j)).drawLabel(this.mc, mouseX, mouseY);
 		}
+		
 		RenderHelper.enableGUIStandardItemLighting();
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float) i, (float) j, 0.0F);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableRescaleNormal();
+		
+		if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
+		this.drawGradientRect(this.xSize - 66, 5, this.xSize - 57, 6, 0xBBFF0000, 0xBBFF0000);
+		this.drawGradientRect(this.xSize - 66, 5, this.xSize - 65, 15, 0xBBFF0000, 0xBBFF0000);
+		this.drawGradientRect(this.xSize - 66, 14, this.xSize - 57, 15, 0xBBFF0000, 0xBBFF0000);
+		this.drawGradientRect(this.xSize - 57, 5, this.xSize - 56, 15, 0xBBFF0000, 0xBBFF0000);
+		}
 
 		this.theSlot = null;
 		int k = 240;
@@ -305,22 +317,47 @@ public class GuiDankNull extends GuiContainer {
 
 		for (int i1 = 0; i1 < this.inventorySlots.inventorySlots.size(); ++i1) {
 			Slot slot = this.inventorySlots.inventorySlots.get(i1);
+
 			this.drawSlot(slot);
+			
 
 			if (this.isMouseOverSlot(slot, mouseX, mouseY) && slot.canBeHovered()) {
 				this.theSlot = slot;
-                GlStateManager.disableLighting();
-                GlStateManager.disableDepth();
-                int j1 = slot.xDisplayPosition;
-                int k1 = slot.yDisplayPosition;
-                GlStateManager.colorMask(true, true, true, false);
-                this.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, 0x999);
-                GlStateManager.colorMask(true, true, true, true);
-                GlStateManager.enableLighting();
-                GlStateManager.enableDepth();
+				GlStateManager.disableLighting();
+				GlStateManager.disableDepth();
+				int j1 = slot.xDisplayPosition;
+				int k1 = slot.yDisplayPosition;
+				GlStateManager.colorMask(true, true, true, false);
+				this.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, 0x999);
+				GlStateManager.colorMask(true, true, true, true);
+				GlStateManager.enableLighting();
+				GlStateManager.enableDepth();
 			}
-
+			if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
+			if (ItemDankNull.getSelectedStackIndex(ItemUtils.getDankNullStack(this.playerInv)) == i1 - 36) {
+				GlStateManager.disableLighting();
+				GlStateManager.disableDepth();
+				//GlStateManager.disableAlpha();
+				//GlStateManager.disableBlend();
+				int j1 = slot.xDisplayPosition;
+				int k1 = slot.yDisplayPosition;
+				//GlStateManager.colorMask(true, true, true, false);
+				this.drawGradientRect(j1, k1, j1 + 16, k1 + 1, 0xBBFF0000, 0xBBFF0000);
+				this.drawGradientRect(j1, k1, j1 + 1, k1 + 16, 0xBBFF0000, 0xBBFF0000);
+				this.drawGradientRect(j1 + 15, k1, j1 + 16, k1 + 16, 0xBBFF0000, 0xBBFF0000);
+				this.drawGradientRect(j1 + 1, k1 + 15, j1 + 16, k1 + 16, 0xBBFF0000, 0xBBFF0000);
+				GlStateManager.enableDepth();
+				//GlStateManager.enableAlpha();
+				//GlStateManager.colorMask(true, true, true, true);
+				GlStateManager.enableLighting();
+				//GlStateManager.enableBlend();
+				//GlStateManager.enableAlpha();
+				//GlStateManager.enableDepth();
+			}
+			}
 		}
+		
+		
 		RenderHelper.disableStandardItemLighting();
 		this.drawGuiContainerForegroundLayer(mouseX, mouseY);
 		RenderHelper.enableGUIStandardItemLighting();
@@ -375,34 +412,16 @@ public class GuiDankNull extends GuiContainer {
 		RenderHelper.enableStandardItemLighting();
 
 	}
-	/*
-	@Override
-	public void setGuiSize(int w, int h)
-    {
-        this.width = w;
-        this.height = h;
-    }
-*/
-	private Slot getSlotAtPosition(int x, int y) {
-		for (int i = 0; i < this.inventorySlots.inventorySlots.size(); ++i) {
-			Slot slot = (Slot) this.inventorySlots.inventorySlots.get(i);
 
-			if (this.isMouseOverSlot(slot, x, y)) {
-				return slot;
-			}
+	
+
+	@Override
+	public void updateScreen() {
+
+		if (!this.mc.thePlayer.isEntityAlive() || this.mc.thePlayer.isDead) {
+			this.mc.thePlayer.closeScreen();
 		}
-		return null;
 	}
-
-	@Override
-	public void updateScreen()
-    {
-
-        if (!this.mc.thePlayer.isEntityAlive() || this.mc.thePlayer.isDead)
-        {
-            this.mc.thePlayer.closeScreen();
-        }
-    }
 
 	private void func_146980_g() {
 		ItemStack itemstack = this.mc.thePlayer.inventory.getItemStack();
@@ -431,20 +450,18 @@ public class GuiDankNull extends GuiContainer {
 	private boolean isMouseOverSlot(Slot slotIn, int mouseX, int mouseY) {
 		return this.isPointInRegion(slotIn.xDisplayPosition, slotIn.yDisplayPosition, 16, 16, mouseX, mouseY);
 	}
-	
+
 	@Override
-	public Slot getSlotUnderMouse()
-    {
-        return this.theSlot;
-    }
-	
+	public Slot getSlotUnderMouse() {
+		return this.theSlot;
+	}
+
 	@Override
-	protected boolean isPointInRegion(int rectX, int rectY, int rectWidth, int rectHeight, int pointX, int pointY)
-    {
-        int i = this.guiLeft;
-        int j = this.guiTop;
-        pointX = pointX - i;
-        pointY = pointY - j;
-        return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
-    }
+	protected boolean isPointInRegion(int rectX, int rectY, int rectWidth, int rectHeight, int pointX, int pointY) {
+		int i = this.guiLeft;
+		int j = this.guiTop;
+		pointX = pointX - i;
+		pointY = pointY - j;
+		return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
+	}
 }

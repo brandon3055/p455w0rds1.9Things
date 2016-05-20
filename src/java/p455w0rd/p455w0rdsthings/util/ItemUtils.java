@@ -7,51 +7,49 @@ import net.minecraft.util.EnumHand;
 import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 
 public class ItemUtils {
-	
+
 	public static ItemStack getDankNullStack(InventoryPlayer playerInv) {
 		EntityPlayer player = playerInv.player;
 		ItemStack dankNullItem = null;
 		// If held item (either hand) is a /dank/null, take precedence
-		if (player.getHeldItem(EnumHand.MAIN_HAND) != null) {
-			if (player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemDankNull) {
-				dankNullItem = player.getHeldItem(EnumHand.MAIN_HAND);
+		if (player.getHeldItemMainhand() != null) {
+			if (player.getHeldItemMainhand().getItem() instanceof ItemDankNull) {
+				dankNullItem = player.getHeldItemMainhand();
 			}
 			else {
-				if (player.getHeldItem(EnumHand.OFF_HAND).getItem() instanceof ItemDankNull) {
-					dankNullItem = player.getHeldItem(EnumHand.OFF_HAND);
+				if (player.getHeldItemOffhand().getItem() instanceof ItemDankNull) {
+					dankNullItem = player.getHeldItemOffhand();
 				}
 			}
 		}
-		else if (player.getHeldItem(EnumHand.OFF_HAND) != null) {
-			if (player.getHeldItem(EnumHand.OFF_HAND).getItem() instanceof ItemDankNull) {
+		else if (player.getHeldItemOffhand() != null) {
+			if (player.getHeldItemOffhand().getItem() instanceof ItemDankNull) {
 				dankNullItem = player.getHeldItem(EnumHand.OFF_HAND);
 			}
 			else {
-				if (player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemDankNull) {
-					dankNullItem = player.getHeldItem(EnumHand.MAIN_HAND);
+				if (player.getHeldItemMainhand().getItem() instanceof ItemDankNull) {
+					dankNullItem = player.getHeldItemMainhand();
 				}
 			}
 		}
-		if (dankNullItem == null) {
-			return null;
-		}
 		// search player's inventory if not held
-		ItemStack dankNullStack = null;
-		int invSize = playerInv.getSizeInventory();
-		if (invSize <= 0) {
-			return null;
-		}
-		for (int i = 0; i < invSize; ++i) {
-			ItemStack itemStack = playerInv.getStackInSlot(i);
-			if (itemStack == null) {
-				continue;
+		if (dankNullItem == null) {
+			int invSize = playerInv.getSizeInventory();
+			if (invSize <= 0) {
+				return null;
 			}
-			if (itemStack.getItem() instanceof ItemDankNull) {
-				dankNullStack = itemStack;
-				break;
+			for (int i = 0; i < invSize; ++i) {
+				ItemStack itemStack = playerInv.getStackInSlot(i);
+				if (itemStack == null) {
+					continue;
+				}
+				if (itemStack.getItem() instanceof ItemDankNull) {
+					dankNullItem = itemStack;
+					break;
+				}
 			}
 		}
-		return dankNullStack;
+		return dankNullItem;
 	}
 
 }

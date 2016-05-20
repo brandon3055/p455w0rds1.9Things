@@ -16,13 +16,16 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class InventoryDankNull implements IInventory, Iterable<ItemStack> {
 
-	private final int size = 54;
+	private int size = 54;
 	private final ItemStack[] inv;
 	private boolean enableClientEvents = false;
 	private ItemStack dankNullStack;
+	private int numRows = 0;
 
 	public InventoryDankNull(final ItemStack itemStackIn) {
 		this.dankNullStack = itemStackIn;
+		this.numRows = itemStackIn.getItemDamage() + 1;
+		this.size = this.numRows * 9;
 		this.inv = new ItemStack[this.size];
 		this.readFromNBT();
 	}

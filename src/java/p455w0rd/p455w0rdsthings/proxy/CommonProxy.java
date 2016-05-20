@@ -16,7 +16,7 @@ public class CommonProxy {
 
 	public void preInit(FMLPreInitializationEvent e) {
 		creativeTab = new CreativeTabP().setNoScrollbar();
-        ModBlocks.init();
+        //ModBlocks.init();
         ModItems.init();
        
     }

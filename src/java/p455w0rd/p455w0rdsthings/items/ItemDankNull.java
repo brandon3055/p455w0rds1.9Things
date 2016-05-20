@@ -1,9 +1,9 @@
 package p455w0rd.p455w0rdsthings.items;
 
 import java.util.List;
-
 import com.google.common.collect.Lists;
 
+import codechicken.lib.render.ModelRegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -35,6 +35,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import p455w0rd.p455w0rdsthings.Globals;
+import p455w0rd.p455w0rdsthings.ModItems;
+import p455w0rd.p455w0rdsthings.client.render.DankNullRenderer;
 import p455w0rd.p455w0rdsthings.handlers.GuiHandler;
 import p455w0rd.p455w0rdsthings.handlers.PacketHandler;
 import p455w0rd.p455w0rdsthings.network.PacketSetSelectedItem;
@@ -58,13 +60,20 @@ public class ItemDankNull extends Item {
 	public void initModel() {
 		for (int i = 0; i < 6; i++) {
 			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
+			//ModelRegistryHelper.register(new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"), new OverrideBakedModel(BakedEnderPouchOverrideHandler.INSTANCE));
+			
+		}
+		try {
+			ModelRegistryHelper.registerItemRenderer(ModItems.dankNullItem, new DankNullRenderer());
+		}
+		catch (ExceptionInInitializerError e) {
+			System.out.println("ERROR: " + e.getLocalizedMessage());
 		}
 	}
-	
-	public String getItemStackDisplayName(ItemStack stack)
-    {
-        return (I18n.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + "v" + this.getDamage(stack) + ".name")).trim();
-    }
+
+	public String getItemStackDisplayName(ItemStack stack) {
+		return (I18n.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + "v" + this.getDamage(stack) + ".name")).trim();
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
@@ -72,17 +81,16 @@ public class ItemDankNull extends Item {
 		if (playerIn.isSneaking()) {
 			GuiHandler.launchGui(Globals.GUINUM_DANKNULL, playerIn, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
 		}
-		return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+		return new ActionResult(EnumActionResult.FAIL, itemStackIn);
 	}
-	
+
 	@SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
-    {
+	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems) {
 		for (int i = 0; i < 6; i++) {
 			subItems.add(new ItemStack(itemIn, 1, i));
 		}
-    }
-	
+	}
+
 	@Override
 	public boolean isDamaged(final ItemStack stack) {
 		return false;
@@ -94,10 +102,10 @@ public class ItemDankNull extends Item {
 	}
 
 	@Override
-	public boolean showDurabilityBar(ItemStack stack)
-    {
-        return false;
-    }
+	public boolean showDurabilityBar(ItemStack stack) {
+		return false;
+	}
+
 	@Override
 	public boolean isDamageable() {
 		return false;

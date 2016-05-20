@@ -1,5 +1,8 @@
 package p455w0rd.p455w0rdsthings.proxy;
 
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import p455w0rd.p455w0rdsthings.ModBlocks;
@@ -14,9 +17,8 @@ public class ClientProxy extends CommonProxy {
         //ModelLoaderRegistry.registerLoader(new BakedModelLoader());
 
         // Typically initialization of models and such goes here:
-        ModBlocks.initModels();
+        //ModBlocks.initModels();
         ModItems.initModels();
-        
     }
 
     @Override

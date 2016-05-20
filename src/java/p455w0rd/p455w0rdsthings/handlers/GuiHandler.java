@@ -21,7 +21,7 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer playerIn, World worldIn, int x, int y, int z) {
 		if (ID == Globals.GUINUM_DANKNULL) {
-			return new GuiDankNull(new ContainerDankNull(playerIn));
+			return new GuiDankNull(new ContainerDankNull(playerIn), playerIn.inventory);
 		}
 		return null;
 	}

@@ -123,12 +123,12 @@ public class EventsHandler {
 	}
 
 	/*
-	 * @SubscribeEvent public void renderHandEvent(RenderHandEvent e) {
-	 * RenderGlobal test = e.getContext();
-	 * 
-	 * if (test != null) { //System.out.println(test.toString()); }
-	 * net.minecraftforge.client.event.RenderHandEvent event =
-	 * ForgeHooksClient.renderFirstPersonHand(e.getContext(),
-	 * e.getPartialTicks(), e.getRenderPass()); }
+	 @SubscribeEvent public void renderHandEvent(RenderHandEvent e) {
+	 RenderGlobal test = e.getContext();
+	 
+	 if (test != null) { //System.out.println(test.toString()); }
+	 net.minecraftforge.client.event.RenderHandEvent event =
+	 ForgeHooksClient.renderFirstPersonHand(e.getContext(),
+	 e.getPartialTicks(), e.getRenderPass()); }
 	 */
 }
