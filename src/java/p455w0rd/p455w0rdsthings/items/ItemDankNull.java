@@ -60,13 +60,14 @@ public class ItemDankNull extends Item {
 		for (int i = 0; i < 6; i++) {
 			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
 			try {
-				PModelRegistryHelper.registerDankNullRenderer(this, DankNullRenderer.INSTANCE, i);
+				PModelRegistryHelper.registerDankNullRenderer(this, new DankNullRenderer(), i);
 			}
 			catch (ExceptionInInitializerError e) {
 				System.out.println("ERROR: " + e.getLocalizedMessage());
 			}
 			catch (NoClassDefFoundError e) {
 				System.out.println("ERROR: " + e.getLocalizedMessage());
+				e.printStackTrace();
 			}
 		}
 	}

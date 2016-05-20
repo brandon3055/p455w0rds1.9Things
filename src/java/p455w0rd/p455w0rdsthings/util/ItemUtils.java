@@ -17,8 +17,10 @@ public class ItemUtils {
 				dankNullItem = player.getHeldItemMainhand();
 			}
 			else {
-				if (player.getHeldItemOffhand().getItem() instanceof ItemDankNull) {
-					dankNullItem = player.getHeldItemOffhand();
+				if (player.getHeldItemOffhand() != null) {
+					if (player.getHeldItemOffhand().getItem() instanceof ItemDankNull) {
+						dankNullItem = player.getHeldItemOffhand();
+					}
 				}
 			}
 		}
@@ -27,8 +29,10 @@ public class ItemUtils {
 				dankNullItem = player.getHeldItem(EnumHand.OFF_HAND);
 			}
 			else {
-				if (player.getHeldItemMainhand().getItem() instanceof ItemDankNull) {
-					dankNullItem = player.getHeldItemMainhand();
+				if (player.getHeldItemMainhand() != null) {
+					if (player.getHeldItemMainhand().getItem() instanceof ItemDankNull) {
+						dankNullItem = player.getHeldItemMainhand();
+					}
 				}
 			}
 		}
