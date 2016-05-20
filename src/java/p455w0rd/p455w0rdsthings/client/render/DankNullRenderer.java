@@ -82,7 +82,7 @@ public class DankNullRenderer implements IItemRenderer {
 			GlStateManager.rotate(timer, 1.0F, 1.0F, 1.0F);
 			model = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(model, ItemCameraTransforms.TransformType.NONE, false);
 
-			renderItem(item, model);
+			renderModel(model, -1, item);
 			GlStateManager.translate(1.0D, 1.0D, 1.0D);
 			GlStateManager.scale(1.0D, 1.0D, 1.0D);
 
@@ -106,10 +106,6 @@ public class DankNullRenderer implements IItemRenderer {
 
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
 		textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
-	}
-
-	private void renderItem(ItemStack stack, IBakedModel model) {
-		this.renderModel(model, -1, stack);
 	}
 
 	private void renderModel(IBakedModel model, int color, ItemStack stack) {
