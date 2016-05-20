@@ -59,11 +59,13 @@ public class ItemDankNull extends Item {
 	public void initModel() {
 		for (int i = 0; i < 6; i++) {
 			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
-				//ModelRegistryHelper.register(new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"), (IBakedModel) dankNullRenderer);
 			try {
 				PModelRegistryHelper.registerDankNullRenderer(this, DankNullRenderer.INSTANCE, i);
 			}
 			catch (ExceptionInInitializerError e) {
+				System.out.println("ERROR: " + e.getLocalizedMessage());
+			}
+			catch (NoClassDefFoundError e) {
 				System.out.println("ERROR: " + e.getLocalizedMessage());
 			}
 		}

@@ -6,8 +6,6 @@ import java.util.List;
 import javax.vecmath.Matrix4f;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
-
 import codechicken.lib.render.IItemRenderer;
 import codechicken.lib.render.TransformUtils;
 import net.minecraft.block.state.IBlockState;
@@ -19,15 +17,11 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import p455w0rd.p455w0rdsthings.items.ItemDankNull;
-import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
 @SideOnly(Side.CLIENT)
 public class DankNullRenderer implements IItemRenderer {
@@ -81,6 +75,7 @@ public class DankNullRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemStack item) {
+		/*
 		if (!(item.getItem() instanceof ItemDankNull)) {
 			return;
 		}
@@ -103,6 +98,7 @@ public class DankNullRenderer implements IItemRenderer {
 			itemRenderer.renderItem(containedStack, stackModel);
 		}
 		GL11.glPopMatrix();
+		*/
 	}
 
 }
