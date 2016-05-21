@@ -11,14 +11,17 @@ import net.minecraftforge.client.model.ModelLoader;
 public class PModelRegistryHelper extends ModelRegistryHelper {
 	
 	public static void registerDankNullRenderer(Item item, IItemRenderer renderer, int damage) {
-        final ModelResourceLocation modelLoc = new ModelResourceLocation(Item.itemRegistry.getNameForObject(item) + "" + damage, "inventory");
+        final ModelResourceLocation modelLoc = new ModelResourceLocation(item.getRegistryName() + "" + damage, "inventory");
         register(modelLoc, renderer);
+        ModelLoader.setCustomModelResourceLocation(item, damage, modelLoc);
         ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
             @Override
             public ModelResourceLocation getModelLocation(ItemStack stack) {
                 return modelLoc;
             }
         });
+        
+        
     }
 	
 }

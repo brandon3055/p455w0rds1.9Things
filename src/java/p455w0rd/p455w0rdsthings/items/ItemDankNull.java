@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,7 +28,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -58,17 +56,9 @@ public class ItemDankNull extends Item {
 	@SideOnly(Side.CLIENT)
 	public void initModel() {
 		for (int i = 0; i < 6; i++) {
-			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
-			try {
-				PModelRegistryHelper.registerDankNullRenderer(this, new DankNullRenderer(), i);
-			}
-			catch (ExceptionInInitializerError e) {
-				System.out.println("ERROR: " + e.getLocalizedMessage());
-			}
-			catch (NoClassDefFoundError e) {
-				System.out.println("ERROR: " + e.getLocalizedMessage());
-				e.printStackTrace();
-			}
+			//ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
+			//Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
+			PModelRegistryHelper.registerDankNullRenderer(this, new DankNullRenderer(), i);
 		}
 	}
 
@@ -171,6 +161,7 @@ public class ItemDankNull extends Item {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private List<ItemStack> getInventoryList(ItemStack itemStackIn) {
 		if (itemStackIn.hasTagCompound() && itemStackIn.getTagCompound().hasKey("danknull-inventory")) {
 			List<ItemStack> inventoryItemStacks = Lists.<ItemStack> newArrayList();
