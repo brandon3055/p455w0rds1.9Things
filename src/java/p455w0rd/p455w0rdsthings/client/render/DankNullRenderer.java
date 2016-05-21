@@ -44,6 +44,7 @@ public class DankNullRenderer implements IItemRenderer {
 		int index = ItemDankNull.getSelectedStackIndex(item);
 		ItemStack containedStack = ItemDankNull.getItemByIndex(item, index);
 		IBakedModel holderModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(item);
+		
 		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
 		textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);

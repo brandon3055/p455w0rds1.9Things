@@ -11,7 +11,7 @@ import net.minecraftforge.client.model.ModelLoader;
 public class PModelRegistryHelper extends ModelRegistryHelper {
 	
 	public static void registerDankNullRenderer(Item item, IItemRenderer renderer, int damage) {
-        final ModelResourceLocation modelLoc = new ModelResourceLocation(item.getRegistryName() + "" + damage, "inventory");
+        final ModelResourceLocation modelLoc = new ModelResourceLocation(Item.itemRegistry.getNameForObject(item) + "" + damage, "inventory");
         register(modelLoc, renderer);
         ModelLoader.setCustomModelResourceLocation(item, damage, modelLoc);
         ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
@@ -20,8 +20,6 @@ public class PModelRegistryHelper extends ModelRegistryHelper {
                 return modelLoc;
             }
         });
-        
-        
     }
 	
 }
