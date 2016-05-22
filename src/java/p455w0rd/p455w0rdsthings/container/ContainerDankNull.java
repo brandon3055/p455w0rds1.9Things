@@ -177,6 +177,11 @@ public class ContainerDankNull extends Container {
 
 		ItemStack itemstack = null;
 		InventoryPlayer inventoryplayer = player.inventory;
+		Slot s = (Slot) this.inventorySlots.get(index);
+		ItemStack thisStack = s.getStack();
+		if (thisStack != null && thisStack.getItem() instanceof ItemDankNull) {
+			return null;
+		}
 
 		ItemStack heldStack = inventoryplayer.getItemStack();
 		
@@ -201,8 +206,7 @@ public class ContainerDankNull extends Container {
 		if (index == -1) {
 			return heldStack;
 		}
-		Slot s = (Slot) this.inventorySlots.get(index);
-		ItemStack thisStack = s.getStack();
+		
 		// custom inventory
 		if (index >= 36 && heldStack != null) {
 			if (thisStack == null) {

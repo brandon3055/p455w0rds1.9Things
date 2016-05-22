@@ -46,6 +46,12 @@ public class ItemDankNull extends Item {
 		setCreativeTab(CreativeTabs.tabMisc);
 		setCreativeTab(CommonProxy.creativeTab);
 	}
+	
+	@SideOnly(Side.CLIENT)
+    public boolean hasEffect(ItemStack stack)
+    {
+        return stack.getItemDamage() >= 5;
+    }
 
 	@SideOnly(Side.CLIENT)
 	public void initModel() {

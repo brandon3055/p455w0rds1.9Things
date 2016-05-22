@@ -91,20 +91,20 @@ public class GuiDankNull extends GuiContainer {
 		this.guiTop = (this.height - this.ySize) / 2;
 		Globals.GUI_DANKNULL_ISOPEN = true;
 	}
-	
+
 	@Override
-	public void onGuiClosed()
-    {
+	public void onGuiClosed() {
 		Globals.GUI_DANKNULL_ISOPEN = false;
-        super.onGuiClosed();
-    }
+		super.onGuiClosed();
+	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.85F);
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		RenderHelper.disableStandardItemLighting();
+		//GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glTranslatef(0.0f, 0.0f, 0.0f);
 		this.mc.getTextureManager().bindTexture(new ResourceLocation(Globals.MODID, "textures/gui/danknullscreen" + ItemUtils.getDankNullStack(this.mc.thePlayer.inventory).getItemDamage() + ".png"));
 		this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
@@ -113,10 +113,12 @@ public class GuiDankNull extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glDisable(GL11.GL_LIGHTING);
+		GlStateManager.disableLighting();
+		//GL11.glDisable(GL11.GL_LIGHTING);
 		//GL11.glDisable(GL11.GL_ALPHA_TEST);
-		GL11.glDisable(GL11.GL_BLEND);
+		//GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GlStateManager.disableBlend();
 		int fontColor = 0xFFFFFF;
 		if (ItemUtils.getDankNullStack(playerInv).getItemDamage() == 0) {
 			fontColor = 0x000;
@@ -126,11 +128,13 @@ public class GuiDankNull extends GuiContainer {
 		if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
 			this.mc.fontRendererObj.drawString("=Selected", this.xSize - 55, 7, fontColor);
 		}
-		GL11.glEnable(GL11.GL_LIGHTING);
+		GlStateManager.enableBlend();
+		GlStateManager.enableLighting();
+		//GL11.glEnable(GL11.GL_LIGHTING);
 		//GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glEnable(GL11.GL_BLEND);
+		//GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		
+
 	}
 
 	protected List<DankNullSlot> getSlots() {
@@ -213,9 +217,9 @@ public class GuiDankNull extends GuiContainer {
 
 	private void drawItemStack(ItemStack stack, int x, int y, String altText) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GlStateManager.translate(0.0F, 0.0F, 32.0F);
 		this.zLevel = 200.0F;
 		this.itemRender.zLevel = 200.0F;
@@ -227,15 +231,16 @@ public class GuiDankNull extends GuiContainer {
 		this.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 		this.itemRender.renderItemOverlayIntoGUI(font, stack, x, y - (this.draggedStack == null ? 0 : 8), altText);
 		GL11.glPopAttrib();
-		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		this.zLevel = 0.0F;
 		this.itemRender.zLevel = 0.0F;
 	}
 
 	@Override
 	public void drawDefaultBackground() {
-		//this.drawWorldBackground(0);
+		this.drawWorldBackground(0);
 		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
 	}
 
@@ -315,18 +320,18 @@ public class GuiDankNull extends GuiContainer {
 		for (int j2 = 0; j2 < this.labelList.size(); ++j2) {
 			((GuiLabel) this.labelList.get(j)).drawLabel(this.mc, mouseX, mouseY);
 		}
-		
+
 		RenderHelper.enableGUIStandardItemLighting();
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float) i, (float) j, 0.0F);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.enableRescaleNormal();
-		
+		//GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		//GlStateManager.enableRescaleNormal();
+
 		if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
-		this.drawGradientRect(this.xSize - 66, 5, this.xSize - 57, 6, 0xBBFF0000, 0xBBFF0000);
-		this.drawGradientRect(this.xSize - 66, 5, this.xSize - 65, 15, 0xBBFF0000, 0xBBFF0000);
-		this.drawGradientRect(this.xSize - 66, 14, this.xSize - 57, 15, 0xBBFF0000, 0xBBFF0000);
-		this.drawGradientRect(this.xSize - 57, 5, this.xSize - 56, 15, 0xBBFF0000, 0xBBFF0000);
+			this.drawGradientRect(this.xSize - 66, 5, this.xSize - 57, 6, 0xBBFF0000, 0xBBFF0000);
+			this.drawGradientRect(this.xSize - 66, 5, this.xSize - 65, 15, 0xBBFF0000, 0xBBFF0000);
+			this.drawGradientRect(this.xSize - 66, 14, this.xSize - 57, 15, 0xBBFF0000, 0xBBFF0000);
+			this.drawGradientRect(this.xSize - 57, 5, this.xSize - 56, 15, 0xBBFF0000, 0xBBFF0000);
 		}
 
 		this.theSlot = null;
@@ -339,11 +344,10 @@ public class GuiDankNull extends GuiContainer {
 			Slot slot = this.inventorySlots.inventorySlots.get(i1);
 
 			this.drawSlot(slot);
-			
 
 			if (this.isMouseOverSlot(slot, mouseX, mouseY) && slot.canBeHovered()) {
 				this.theSlot = slot;
-				//GlStateManager.disableLighting();
+				GlStateManager.disableLighting();
 				GlStateManager.disableDepth();
 				GlStateManager.disableBlend();
 				int j1 = slot.xDisplayPosition;
@@ -351,36 +355,34 @@ public class GuiDankNull extends GuiContainer {
 				GlStateManager.colorMask(true, true, true, false);
 				this.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, 0x999);
 				GlStateManager.colorMask(true, true, true, true);
-				//GlStateManager.enableLighting();
+				GlStateManager.enableLighting();
 				GlStateManager.enableDepth();
 				GlStateManager.enableBlend();
 			}
 			if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
-			if (ItemDankNull.getSelectedStackIndex(ItemUtils.getDankNullStack(this.playerInv)) == i1 - 36) {
-				GlStateManager.disableLighting();
-				GlStateManager.disableDepth();
-				//GlStateManager.disableAlpha();
-				//GlStateManager.disableBlend();
-				int j1 = slot.xDisplayPosition;
-				int k1 = slot.yDisplayPosition;
-				GlStateManager.colorMask(true, true, true, false);
-				this.drawGradientRect(j1, k1, j1 + 16, k1 + 1, 0xBBFF0000, 0xBBFF0000);
-				this.drawGradientRect(j1, k1, j1 + 1, k1 + 16, 0xBBFF0000, 0xBBFF0000);
-				this.drawGradientRect(j1 + 15, k1, j1 + 16, k1 + 16, 0xBBFF0000, 0xBBFF0000);
-				this.drawGradientRect(j1 + 1, k1 + 15, j1 + 16, k1 + 16, 0xBBFF0000, 0xBBFF0000);
-				GlStateManager.enableDepth();
-				//GlStateManager.enableAlpha();
-				GlStateManager.colorMask(true, true, true, true);
-				GlStateManager.enableLighting();
-				//GlStateManager.enableBlend();
-			}
+				if (ItemDankNull.getSelectedStackIndex(ItemUtils.getDankNullStack(this.playerInv)) == i1 - 36) {
+					GlStateManager.disableLighting();
+					//GlStateManager.disableDepth();
+					//GlStateManager.disableAlpha();
+					//GlStateManager.disableBlend();
+					int j1 = slot.xDisplayPosition;
+					int k1 = slot.yDisplayPosition;
+					//GlStateManager.colorMask(true, true, true, false);
+					this.drawGradientRect(j1, k1, j1 + 16, k1 + 1, 0xBBFF0000, 0xBBFF0000);
+					this.drawGradientRect(j1, k1, j1 + 1, k1 + 16, 0xBBFF0000, 0xBBFF0000);
+					this.drawGradientRect(j1 + 15, k1, j1 + 16, k1 + 16, 0xBBFF0000, 0xBBFF0000);
+					this.drawGradientRect(j1 + 1, k1 + 15, j1 + 16, k1 + 16, 0xBBFF0000, 0xBBFF0000);
+					//GlStateManager.enableDepth();
+					//GlStateManager.enableAlpha();
+					//GlStateManager.colorMask(true, true, true, true);
+					GlStateManager.enableLighting();
+					//GlStateManager.enableBlend();
+				}
 			}
 		}
-		
-		
-		RenderHelper.disableStandardItemLighting();
+
 		this.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		RenderHelper.enableGUIStandardItemLighting();
+
 		InventoryPlayer inventoryplayer = this.mc.thePlayer.inventory;
 		ItemStack itemstack = this.draggedStack == null ? inventoryplayer.getItemStack() : this.draggedStack;
 
@@ -427,13 +429,7 @@ public class GuiDankNull extends GuiContainer {
 			this.renderToolTip(itemstack1, mouseX, mouseY);
 		}
 
-		GlStateManager.enableLighting();
-		GlStateManager.enableDepth();
-		RenderHelper.enableStandardItemLighting();
-
 	}
-
-	
 
 	@Override
 	public void updateScreen() {

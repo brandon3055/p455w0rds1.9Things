@@ -77,10 +77,16 @@ public class EventsHandler {
 			if (player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemDankNull) {
 				dankNullItem = player.getHeldItem(EnumHand.MAIN_HAND);
 			}
+			else if (player.getHeldItem(EnumHand.OFF_HAND) != null && player.getHeldItem(EnumHand.OFF_HAND).getItem() instanceof ItemDankNull) {
+				dankNullItem = player.getHeldItem(EnumHand.OFF_HAND);
+			}
 		}
 		else if (player.getHeldItem(EnumHand.OFF_HAND) != null) {
 			if (player.getHeldItem(EnumHand.OFF_HAND).getItem() instanceof ItemDankNull) {
 				dankNullItem = player.getHeldItem(EnumHand.OFF_HAND);
+			}
+			else if (player.getHeldItem(EnumHand.MAIN_HAND) != null && player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemDankNull) {
+				dankNullItem = player.getHeldItem(EnumHand.MAIN_HAND);
 			}
 		}
 		if (dankNullItem == null) {
@@ -94,11 +100,11 @@ public class EventsHandler {
 				return;
 			}
 			//System.out.println("Button: " + event.getButton() + " DWheel: " + event.getDwheel() + " ButonState:" + event.isButtonstate());
-			if (event.getButton() == 4) {
+			if (event.getButton() == 3) {
 				ItemDankNull.setNextSelectedStack(dankNullItem, player);
 				event.setCanceled(true);
 			}
-			else if (event.getButton() == 3) {
+			else if (event.getButton() == 4) {
 				ItemDankNull.setPreviousSelectedStack(dankNullItem, player);
 				event.setCanceled(true);
 			}
