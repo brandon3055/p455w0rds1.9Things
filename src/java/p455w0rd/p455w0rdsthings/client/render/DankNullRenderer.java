@@ -2,12 +2,14 @@ package p455w0rd.p455w0rdsthings.client.render;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.vecmath.Matrix4f;
 
 import org.apache.commons.lang3.tuple.Pair;
+
 import codechicken.lib.render.IItemRenderer;
 import codechicken.lib.render.TransformUtils;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockTorch;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -25,11 +27,14 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import p455w0rd.p455w0rdsthings.ModItems;
 import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 
 @SideOnly(Side.CLIENT)
@@ -41,29 +46,49 @@ public class DankNullRenderer implements IItemRenderer {
 		if (!(item.getItem() instanceof ItemDankNull)) {
 			return;
 		}
+		int view = Minecraft.getMinecraft().getRenderManager().options.thirdPersonView;
 		int index = ItemDankNull.getSelectedStackIndex(item);
 		ItemStack containedStack = ItemDankNull.getItemByIndex(item, index);
-		IBakedModel holderModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(item);
-		
+		IBakedModel holderModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(new ItemStack(ModItems.dankNullHolder, 1, item.getItemDamage()));
+
 		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
 		textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
-		
+
 		if (containedStack != null) {
 			IBakedModel containedItemModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(containedStack);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.alphaFunc(516, 0.1F);
 			GlStateManager.enableBlend();
+			GlStateManager.enableAlpha();
 			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			GlStateManager.pushMatrix();
-			GlStateManager.scale(0.5D, 0.5D, 0.5D);
-			GlStateManager.translate(0.5D, 1.1D, 0.5D);
+			
+			if (containedStack.getItem() instanceof ItemBlock && !(Block.getBlockFromItem(containedStack.getItem()) instanceof BlockTorch)) {
+				GlStateManager.scale(0.4D, 0.4D, 0.4D);
+				if (view > 0 || !isStackInHand(item)) {
+					GlStateManager.translate(0.75D, 0.9D, 0.75D);
+				}
+				else {
+					GlStateManager.translate(0.75D, 1.5D, 0.75D);
+				}
+			}
+			else {
+				GlStateManager.scale(0.5D, 0.5D, 0.5D);
+				if (view > 0 || !isStackInHand(item)) {
+					GlStateManager.translate(0.75D, 0.9D, 0.75D);
+				}
+				else {
+					GlStateManager.translate(0.5D, 1.5D, 0.5D);
+				}
+			}
 			if (timer >= 361.0F) {
 				timer = 0.0F;
 			}
 			timer += 0.25F;
 			GlStateManager.rotate(timer, 1.0F, 1.0F, 1.0F);
+			
 			containedItemModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(containedItemModel, ItemCameraTransforms.TransformType.NONE, false);
 			renderModel(containedItemModel, item);
 			GlStateManager.translate(1.0D, 1.0D, 1.0D);
@@ -72,21 +97,40 @@ public class DankNullRenderer implements IItemRenderer {
 			GlStateManager.popMatrix();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.disableBlend();
+			GlStateManager.disableAlpha();
 		}
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableRescaleNormal();
+		GlStateManager.enableLighting();
 		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.enableAlpha();
 		GlStateManager.enableBlend();
+		//GlStateManager.enableDepth();
 		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		GlStateManager.pushMatrix();
+		//GlStateManager.translate(-1.5D, -1.5D, -1.5D);
+		//GlStateManager.scale(4.0D, 4.0D, 4.0D);
 		holderModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(holderModel, ItemCameraTransforms.TransformType.NONE, false);
 		renderModel(holderModel, item);
+		//Minecraft.getMinecraft().getItemRenderer().renderItem(Minecraft.getMinecraft().thePlayer, new ItemStack(ModItems.dankNullHolder, 1, item.getItemDamage()), ItemCameraTransforms.TransformType.NONE);
+		//Minecraft.getMinecraft().getItemRenderer().renderItemSide(Minecraft.getMinecraft().thePlayer, item, ItemCameraTransforms.TransformType.NONE, false);
 		GlStateManager.popMatrix();
+		GlStateManager.disableLighting();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableBlend();
+		GlStateManager.disableAlpha();
+		//GlStateManager.disableDepth();
 
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
 		textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+	}
+	
+	private boolean isStackInHand(ItemStack itemStackIn) {
+		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		if (player.getHeldItemMainhand() == itemStackIn || player.getHeldItemOffhand() == itemStackIn) {
+			return true;
+		}
+		return false;
 	}
 
 	private void renderModel(IBakedModel model, ItemStack stack) {
@@ -100,6 +144,11 @@ public class DankNullRenderer implements IItemRenderer {
 
 		this.renderQuads(vertexbuffer, model.getQuads((IBlockState) null, (EnumFacing) null, 0L), -1, stack);
 		tessellator.draw();
+	}
+
+	@Override
+	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+		return new ArrayList<BakedQuad>();
 	}
 
 	private void renderQuads(VertexBuffer renderer, List<BakedQuad> quads, int color, ItemStack stack) {
@@ -128,11 +177,6 @@ public class DankNullRenderer implements IItemRenderer {
 	@Override
 	public Pair<? extends IBakedModel, Matrix4f> handlePerspective(TransformType cameraTransformType) {
 		return IPerspectiveAwareModel.MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK.getTransforms(), cameraTransformType);
-	}
-
-	@Override
-	public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-		return new ArrayList<BakedQuad>(); //empty array
 	}
 
 	@Override

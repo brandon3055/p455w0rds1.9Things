@@ -152,7 +152,7 @@ public class ContainerDankNull extends Container {
 			if (s == null || s.getStack() == null) {
 				continue;
 			}
-			if (s.getStack().getItem() == itemStackIn.getItem()) {
+			if (s.getStack().getItem() == itemStackIn.getItem() && s.getStack().getItemDamage() == itemStackIn.getItemDamage()) {
 				return true;
 			}
 		}
@@ -207,6 +207,7 @@ public class ContainerDankNull extends Container {
 		if (index >= 36 && heldStack != null) {
 			if (thisStack == null) {
 				ItemStack newStack = heldStack.copy();
+				newStack.setItemDamage(heldStack.getItemDamage());
 				if (!isStackAlreadyAdded(heldStack)) {
 					if (!newStack.hasTagCompound()) {
 						newStack.setTagCompound(new NBTTagCompound());

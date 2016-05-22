@@ -1,11 +1,7 @@
 package p455w0rd.p455w0rdsthings.proxy;
 
-import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import p455w0rd.p455w0rdsthings.ModBlocks;
 import p455w0rd.p455w0rdsthings.ModItems;
 
 public class ClientProxy extends CommonProxy {
@@ -18,13 +14,13 @@ public class ClientProxy extends CommonProxy {
 
         // Typically initialization of models and such goes here:
         //ModBlocks.initModels();
-        ModItems.initModels();
+        ModItems.preInitModels();
     }
 
     @Override
     public void init(FMLInitializationEvent e) {
         super.init(e);
-        
+        ModItems.initModels();
 
         // Initialize our input handler so we can listen to keys
         // MinecraftForge.EVENT_BUS.register(new InputHandler());

@@ -2,17 +2,12 @@ package p455w0rd.p455w0rdsthings.items;
 
 import java.util.List;
 import com.google.common.collect.Lists;
-
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -22,7 +17,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -56,8 +50,6 @@ public class ItemDankNull extends Item {
 	@SideOnly(Side.CLIENT)
 	public void initModel() {
 		for (int i = 0; i < 6; i++) {
-			//ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
-			//Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(this, i, new ModelResourceLocation(this.getRegistryName() + "" + i, "inventory"));
 			PModelRegistryHelper.registerDankNullRenderer(this, new DankNullRenderer(), i);
 		}
 	}
@@ -106,38 +98,58 @@ public class ItemDankNull extends Item {
 		if (worldIn.isRemote) {
 			return EnumActionResult.FAIL;
 		}
+		ItemStack selectedStack = getSelectedStack(stack);
+
 		if (playerIn.isSneaking()) {
+			if (selectedStack == null) {
+				if (getItemCount(stack) > 0) {
+					setSelectedStackIndex(stack, 0);
+				}
+			}
 			GuiHandler.launchGui(Globals.GUINUM_DANKNULL, playerIn, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
 		}
 		else {
-			ItemStack selectedStack = getSelectedStack(stack);
 			if (selectedStack == null) {
 				return EnumActionResult.FAIL;
 			}
 			if (!(selectedStack.getItem() instanceof ItemBlock)) {
 				return EnumActionResult.FAIL;
 			}
-			Block selectedBlock = ((ItemBlock) selectedStack.getItem()).getBlock();
+			((ItemBlock) selectedStack.getItem()).getBlock();
 			IBlockState iblockstate = worldIn.getBlockState(pos);
 			Block block = iblockstate.getBlock();
 
-			if (!block.isReplaceable(worldIn, pos)) {
+			if (block.isReplaceable(worldIn, pos) && block == Blocks.snow_layer) {
+				facing = EnumFacing.UP;
+			}
+			else if (!block.isReplaceable(worldIn, pos)) {
 				pos = pos.offset(facing);
 			}
 
-			if (stack.stackSize != 0 && playerIn.canPlayerEdit(pos, facing, stack) && worldIn.canBlockBePlaced(selectedBlock, pos, false, facing, (Entity) null, stack)) {
-				//int i = this.getMetadata(stack.getMetadata());
-				int i = selectedStack.getItemDamage();
-				IBlockState iblockstate1 = selectedBlock.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, i, playerIn);
-				if (new ItemBlock(selectedBlock).placeBlockAt(stack, playerIn, worldIn, pos, facing, hitX, hitY, hitZ, iblockstate1)) {
-					//if (new ItemBlock(selectedBlock).onItemUse(selectedStack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ) == EnumActionResult.SUCCESS) {
-					SoundType soundtype = selectedBlock.getStepSound();
-					worldIn.playSound(playerIn, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-					decrSelectedStackSize(stack);
-					//--stack.stackSize;
+			if (getSelectedStackSize(stack) > 0 && playerIn.canPlayerEdit(pos, facing, stack)) {
+				if (facing == EnumFacing.UP) {
+					pos = pos.offset(EnumFacing.DOWN);
+				}
+				else if (facing == EnumFacing.DOWN) {
+					pos = pos.offset(EnumFacing.UP);
+				}
+				else if (facing == EnumFacing.EAST) {
+					pos = pos.offset(EnumFacing.WEST);
+				}
+				else if (facing == EnumFacing.WEST) {
+					pos = pos.offset(EnumFacing.EAST);
+				}
+				else if (facing == EnumFacing.NORTH) {
+					pos = pos.offset(EnumFacing.SOUTH);
+				}
+				else if (facing == EnumFacing.SOUTH) {
+					pos = pos.offset(EnumFacing.NORTH);
 				}
 
-				return EnumActionResult.SUCCESS;
+				selectedStack.onItemUse(playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+				if (!playerIn.capabilities.isCreativeMode) {
+					decrSelectedStackSize(stack);
+				}
 			}
 		}
 		return EnumActionResult.FAIL;
@@ -317,16 +329,6 @@ public class ItemDankNull extends Item {
 	@Override
 	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
 
-	}
-
-	public void renderItem() {
-		RenderHelper.enableStandardItemLighting();
-		GlStateManager.enableLighting();
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(.5, 1.0, .5);
-		GlStateManager.scale(.7f, .7f, .7f);
-		Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(net.minecraft.init.Items.apple), ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND);
-		GlStateManager.popMatrix();
 	}
 
 }

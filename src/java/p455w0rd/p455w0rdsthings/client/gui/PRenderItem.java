@@ -86,12 +86,13 @@ public class PRenderItem extends RenderItem {
 					stackSize = this.getToBeRenderedStackSize(amount);
 				}
 			}
-			//GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
+			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			//GL11.glDisable(GL11.GL_ALPHA_TEST);
-			//GL11.glDisable(GL11.GL_BLEND);
 			GL11.glPushMatrix();
 			GL11.glScaled(scaleFactor, scaleFactor, scaleFactor);
+			GlStateManager.disableLighting();
 
 			final int X = (int) (((float) par4 + offset + 16.0f - fontRenderer.getStringWidth(stackSize) * scaleFactor) * inverseScaleFactor);
 			final int Y = (int) (((float) par5 + offset + 16.0f - 7.0f * scaleFactor) * inverseScaleFactor);
@@ -100,9 +101,9 @@ public class PRenderItem extends RenderItem {
 			}
 
 			GL11.glPopMatrix();
-			//GL11.glEnable(GL11.GL_BLEND);
-			//GL11.glEnable(GL11.GL_ALPHA_TEST);
-			//GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_ALPHA_TEST);
+			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			
 

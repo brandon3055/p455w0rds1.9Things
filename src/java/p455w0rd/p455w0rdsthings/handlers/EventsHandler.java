@@ -10,12 +10,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import p455w0rd.p455w0rdsthings.Globals;
 import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 import p455w0rd.p455w0rdsthings.util.CapeUtils;
 
@@ -84,7 +86,7 @@ public class EventsHandler {
 		if (dankNullItem == null) {
 			return;
 		}
-		
+
 		if (event.getDwheel() == 0 && event.isButtonstate()) {
 			int currentIndex = ItemDankNull.getSelectedStackIndex(dankNullItem);
 			int totalSize = ItemDankNull.getItemCount(dankNullItem);
@@ -122,13 +124,22 @@ public class EventsHandler {
 		return;
 	}
 
+	@SubscribeEvent
+	public void renderOverlayEvent(RenderGameOverlayEvent e) {
+		if (Globals.GUI_DANKNULL_ISOPEN) {
+			if (e.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
+				e.setCanceled(true);
+			}
+		}
+	}
+
 	/*
-	 @SubscribeEvent public void renderHandEvent(RenderHandEvent e) {
-	 RenderGlobal test = e.getContext();
-	 
-	 if (test != null) { //System.out.println(test.toString()); }
-	 net.minecraftforge.client.event.RenderHandEvent event =
-	 ForgeHooksClient.renderFirstPersonHand(e.getContext(),
-	 e.getPartialTicks(), e.getRenderPass()); }
+	 * @SubscribeEvent public void renderHandEvent(RenderHandEvent e) {
+	 * RenderGlobal test = e.getContext();
+	 * 
+	 * if (test != null) { //System.out.println(test.toString()); }
+	 * net.minecraftforge.client.event.RenderHandEvent event =
+	 * ForgeHooksClient.renderFirstPersonHand(e.getContext(),
+	 * e.getPartialTicks(), e.getRenderPass()); }
 	 */
 }

@@ -89,7 +89,15 @@ public class GuiDankNull extends GuiContainer {
 		this.setItemRender(pRenderItem);
 		this.guiLeft = (this.width - this.xSize) / 2;
 		this.guiTop = (this.height - this.ySize) / 2;
+		Globals.GUI_DANKNULL_ISOPEN = true;
 	}
+	
+	@Override
+	public void onGuiClosed()
+    {
+		Globals.GUI_DANKNULL_ISOPEN = false;
+        super.onGuiClosed();
+    }
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
@@ -105,6 +113,10 @@ public class GuiDankNull extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		//GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		int fontColor = 0xFFFFFF;
 		if (ItemUtils.getDankNullStack(playerInv).getItemDamage() == 0) {
 			fontColor = 0x000;
@@ -114,6 +126,11 @@ public class GuiDankNull extends GuiContainer {
 		if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
 			this.mc.fontRendererObj.drawString("=Selected", this.xSize - 55, 7, fontColor);
 		}
+		GL11.glEnable(GL11.GL_LIGHTING);
+		//GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		
 	}
 
 	protected List<DankNullSlot> getSlots() {
@@ -196,9 +213,9 @@ public class GuiDankNull extends GuiContainer {
 
 	private void drawItemStack(ItemStack stack, int x, int y, String altText) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GlStateManager.translate(0.0F, 0.0F, 32.0F);
 		this.zLevel = 200.0F;
 		this.itemRender.zLevel = 200.0F;
@@ -210,6 +227,8 @@ public class GuiDankNull extends GuiContainer {
 		this.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 		this.itemRender.renderItemOverlayIntoGUI(font, stack, x, y - (this.draggedStack == null ? 0 : 8), altText);
 		GL11.glPopAttrib();
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		this.zLevel = 0.0F;
 		this.itemRender.zLevel = 0.0F;
 	}
@@ -274,6 +293,7 @@ public class GuiDankNull extends GuiContainer {
 		vertexbuffer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, (double) tint).color(64, 64, 64, 255).endVertex();
 		tessellator.draw();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.enableLighting();
 	}
 
 	@Override
@@ -323,15 +343,17 @@ public class GuiDankNull extends GuiContainer {
 
 			if (this.isMouseOverSlot(slot, mouseX, mouseY) && slot.canBeHovered()) {
 				this.theSlot = slot;
-				GlStateManager.disableLighting();
+				//GlStateManager.disableLighting();
 				GlStateManager.disableDepth();
+				GlStateManager.disableBlend();
 				int j1 = slot.xDisplayPosition;
 				int k1 = slot.yDisplayPosition;
 				GlStateManager.colorMask(true, true, true, false);
 				this.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -2130706433, 0x999);
 				GlStateManager.colorMask(true, true, true, true);
-				GlStateManager.enableLighting();
+				//GlStateManager.enableLighting();
 				GlStateManager.enableDepth();
+				GlStateManager.enableBlend();
 			}
 			if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
 			if (ItemDankNull.getSelectedStackIndex(ItemUtils.getDankNullStack(this.playerInv)) == i1 - 36) {
@@ -341,18 +363,16 @@ public class GuiDankNull extends GuiContainer {
 				//GlStateManager.disableBlend();
 				int j1 = slot.xDisplayPosition;
 				int k1 = slot.yDisplayPosition;
-				//GlStateManager.colorMask(true, true, true, false);
+				GlStateManager.colorMask(true, true, true, false);
 				this.drawGradientRect(j1, k1, j1 + 16, k1 + 1, 0xBBFF0000, 0xBBFF0000);
 				this.drawGradientRect(j1, k1, j1 + 1, k1 + 16, 0xBBFF0000, 0xBBFF0000);
 				this.drawGradientRect(j1 + 15, k1, j1 + 16, k1 + 16, 0xBBFF0000, 0xBBFF0000);
 				this.drawGradientRect(j1 + 1, k1 + 15, j1 + 16, k1 + 16, 0xBBFF0000, 0xBBFF0000);
 				GlStateManager.enableDepth();
 				//GlStateManager.enableAlpha();
-				//GlStateManager.colorMask(true, true, true, true);
+				GlStateManager.colorMask(true, true, true, true);
 				GlStateManager.enableLighting();
 				//GlStateManager.enableBlend();
-				//GlStateManager.enableAlpha();
-				//GlStateManager.enableDepth();
 			}
 			}
 		}

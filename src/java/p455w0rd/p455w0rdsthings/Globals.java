@@ -10,4 +10,6 @@ public class Globals {
 	
 	private static int guiIndex = 0;
 	public static int GUINUM_DANKNULL = ++guiIndex;
+	
+	public static boolean GUI_DANKNULL_ISOPEN = false;
 }
