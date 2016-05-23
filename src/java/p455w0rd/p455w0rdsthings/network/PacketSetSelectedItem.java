@@ -44,9 +44,9 @@ public class PacketSetSelectedItem implements IMessage {
 		private void handle(PacketSetSelectedItem message, MessageContext ctx) {
 			// This code is run on the server side. So you can do server-side calculations here
 			EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-			ItemStack dankNullItem = ItemUtils.getDankNullStack(player.inventory);
+			ItemStack dankNullItem = ItemUtils.getDankNull(player.inventory);
 			if (dankNullItem != null) {
-				ItemDankNull.setSelectedStackIndex(dankNullItem, PacketSetSelectedItem.index);
+				ItemUtils.setSelectedStackIndex(dankNullItem, PacketSetSelectedItem.index);
 			}
 		}
 	}

@@ -21,6 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import p455w0rd.p455w0rdsthings.Globals;
 import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 import p455w0rd.p455w0rdsthings.util.CapeUtils;
+import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
 public class EventsHandler {
 
@@ -126,35 +127,35 @@ public class EventsHandler {
 		}
 
 		if (event.getDwheel() == 0 && event.isButtonstate()) {
-			int currentIndex = ItemDankNull.getSelectedStackIndex(dankNullItem);
-			int totalSize = ItemDankNull.getItemCount(dankNullItem);
+			int currentIndex = ItemUtils.getSelectedStackIndex(dankNullItem);
+			int totalSize = ItemUtils.getItemCount(dankNullItem);
 			if (currentIndex == -1 || totalSize <= 1) {
 				return;
 			}
 			//System.out.println("Button: " + event.getButton() + " DWheel: " + event.getDwheel() + " ButonState:" + event.isButtonstate());
 			if (event.getButton() == 3) {
-				ItemDankNull.setNextSelectedStack(dankNullItem, player);
+				ItemUtils.setNextSelectedStack(dankNullItem, player);
 				event.setCanceled(true);
 			}
 			else if (event.getButton() == 4) {
-				ItemDankNull.setPreviousSelectedStack(dankNullItem, player);
+				ItemUtils.setPreviousSelectedStack(dankNullItem, player);
 				event.setCanceled(true);
 			}
 		}
 		else {
 			if (player.isSneaking()) {
-				int currentIndex = ItemDankNull.getSelectedStackIndex(dankNullItem);
-				int totalSize = ItemDankNull.getItemCount(dankNullItem);
+				int currentIndex = ItemUtils.getSelectedStackIndex(dankNullItem);
+				int totalSize = ItemUtils.getItemCount(dankNullItem);
 				if (currentIndex == -1 || totalSize <= 1) {
 					return;
 				}
 				int scrollForward = event.getDwheel();
 				if (scrollForward < 0) {
-					ItemDankNull.setNextSelectedStack(dankNullItem, player);
+					ItemUtils.setNextSelectedStack(dankNullItem, player);
 					event.setCanceled(true);
 				}
 				else if (scrollForward > 0) {
-					ItemDankNull.setPreviousSelectedStack(dankNullItem, player);
+					ItemUtils.setPreviousSelectedStack(dankNullItem, player);
 					event.setCanceled(true);
 				}
 			}
