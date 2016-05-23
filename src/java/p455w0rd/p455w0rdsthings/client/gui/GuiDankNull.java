@@ -102,9 +102,9 @@ public class GuiDankNull extends GuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.85F);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.9F);
 		RenderHelper.disableStandardItemLighting();
-		//GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glTranslatef(0.0f, 0.0f, 0.0f);
 		this.mc.getTextureManager().bindTexture(new ResourceLocation(Globals.MODID, "textures/gui/danknullscreen" + ItemUtils.getDankNullStack(this.mc.thePlayer.inventory).getItemDamage() + ".png"));
 		this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
@@ -114,10 +114,10 @@ public class GuiDankNull extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.disableLighting();
-		//GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		//GL11.glDisable(GL11.GL_ALPHA_TEST);
 		//GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		//GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GlStateManager.disableBlend();
 		int fontColor = 0xFFFFFF;
 		if (ItemUtils.getDankNullStack(playerInv).getItemDamage() == 0) {
@@ -130,10 +130,10 @@ public class GuiDankNull extends GuiContainer {
 		}
 		GlStateManager.enableBlend();
 		GlStateManager.enableLighting();
-		//GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_LIGHTING);
 		//GL11.glEnable(GL11.GL_ALPHA_TEST);
 		//GL11.glEnable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		//GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 	}
 
@@ -240,7 +240,7 @@ public class GuiDankNull extends GuiContainer {
 
 	@Override
 	public void drawDefaultBackground() {
-		this.drawWorldBackground(0);
+		//this.drawWorldBackground(0);
 		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
 	}
 
@@ -286,11 +286,10 @@ public class GuiDankNull extends GuiContainer {
 	@Override
 	public void drawBackground(int tint) {
 		GlStateManager.disableLighting();
-		GlStateManager.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 		this.mc.getTextureManager().bindTexture(optionsBackground);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
 		vertexbuffer.pos(0.0D, (double) this.height, 0.0D).tex(0.0D, (double) ((float) this.height / 32.0F + (float) tint)).color(64, 64, 64, 255).endVertex();
 		vertexbuffer.pos((double) this.width, (double) this.height, 0.0D).tex((double) ((float) this.width / 32.0F), (double) ((float) this.height / 32.0F + (float) tint)).color(64, 64, 64, 255).endVertex();

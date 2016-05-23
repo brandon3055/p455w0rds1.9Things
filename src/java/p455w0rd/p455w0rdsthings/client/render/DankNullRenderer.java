@@ -68,7 +68,7 @@ public class DankNullRenderer implements IItemRenderer {
 		textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
 
 		if (containedStack != null) {
-			IBakedModel containedItemModel = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(containedStack, Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer);
+			IBakedModel containedItemModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(containedStack);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.alphaFunc(516, 0.1F);
@@ -80,7 +80,16 @@ public class DankNullRenderer implements IItemRenderer {
 			
 			if (containedStack.getItem() instanceof ItemBlock && !(Block.getBlockFromItem(containedStack.getItem()) instanceof BlockTorch)) {
 				GlStateManager.scale(0.4D, 0.4D, 0.4D);
-				if (view > 0 || !isStackInHand(item)) {
+				if (containedItemModel.isBuiltInRenderer()) {
+					if (view > 0 || !isStackInHand(item)) {
+						GlStateManager.scale(1.1D, 1.1D, 1.1D);
+						GlStateManager.translate(1.25D, 1.4D, 1.25D);
+					}
+					else {
+						GlStateManager.translate(1.25D, 2.0D, 1.25D);
+					}
+				}
+				else if (view > 0 || !isStackInHand(item)) {
 					GlStateManager.translate(0.75D, 0.9D, 0.75D);
 				}
 				else {
@@ -101,6 +110,7 @@ public class DankNullRenderer implements IItemRenderer {
 				timer = 0.0F;
 			}
 			timer += 0.25F;
+			
 			GlStateManager.rotate(timer, 1.0F, 1.0F, 1.0F);
 			
 			containedItemModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(containedItemModel, ItemCameraTransforms.TransformType.NONE, false);
@@ -120,6 +130,7 @@ public class DankNullRenderer implements IItemRenderer {
 		GlStateManager.alphaFunc(516, 0.1F);
 		GlStateManager.enableAlpha();
 		GlStateManager.enableBlend();
+		GlStateManager.disableCull();
 		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		GlStateManager.pushMatrix();
 
@@ -131,6 +142,7 @@ public class DankNullRenderer implements IItemRenderer {
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableBlend();
 		GlStateManager.disableAlpha();
+		
 
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
 		textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
@@ -187,14 +199,7 @@ public class DankNullRenderer implements IItemRenderer {
 				if (EntityRenderer.anaglyphEnable) {
 					k = TextureUtil.anaglyphColor(k);
 				}
-				/*
-				if (Block.getBlockFromItem(stack.getItem()) instanceof BlockGrass) {
-					k = 0xFF006F00;
-				}
-				else {
-				*/
-					k = k | -16777216;
-				//}
+				k = k | -16777216;
 			}
 			net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, bakedquad, k);
 		}
@@ -207,14 +212,17 @@ public class DankNullRenderer implements IItemRenderer {
             GlStateManager.pushMatrix();
             //GlStateManager.translate(-0.5F, -0.5F, -0.5F);
 
+            
             if (model.isBuiltInRenderer())
             {
                 //GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 //GlStateManager.enableRescaleNormal();
-                TileEntityItemStackRenderer.instance.renderByItem(stack);
+                //TileEntityItemStackRenderer.instance.renderByItem(stack);
+            	Minecraft.getMinecraft().getItemRenderer().renderItem(Minecraft.getMinecraft().thePlayer, stack, TransformType.NONE);
             }
             else
             {
+            
                 this.renderModel(model, stack);
 
                 if (stack.hasEffect())
