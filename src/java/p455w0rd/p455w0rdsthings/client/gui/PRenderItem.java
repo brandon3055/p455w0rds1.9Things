@@ -2,8 +2,6 @@ package p455w0rd.p455w0rdsthings.client.gui;
 
 import javax.annotation.Nonnull;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
@@ -14,6 +12,7 @@ import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import p455w0rd.p455w0rdsthings.util.ItemUtils;
 import p455w0rd.p455w0rdsthings.util.ReadableNumberConverter;
 
 /**
@@ -68,8 +67,8 @@ public class PRenderItem extends RenderItem {
 			}
 
 			long amount = 0;
-			if (is.hasTagCompound() && is.getTagCompound().hasKey("p455w0rd.StackSize")) {
-				amount = is.getTagCompound().getLong("p455w0rd.StackSize");
+			if (ItemUtils.isDankNullStack(is)) {
+				amount = ItemUtils.getDankNullStackSize(is);
 				if (amount != 0) {
 					scaleFactor = 0.5f;
 					inverseScaleFactor = 1.0f / scaleFactor;
@@ -86,13 +85,12 @@ public class PRenderItem extends RenderItem {
 					stackSize = this.getToBeRenderedStackSize(amount);
 				}
 			}
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			GL11.glPushMatrix();
-			GL11.glScaled(scaleFactor, scaleFactor, scaleFactor);
 			GlStateManager.disableLighting();
+			GlStateManager.disableAlpha();
+			GlStateManager.disableBlend();
+			GlStateManager.disableDepth();
+			GlStateManager.pushMatrix();
+			GlStateManager.scale(scaleFactor, scaleFactor, scaleFactor);
 
 			final int X = (int) (((float) par4 + offset + 16.0f - fontRenderer.getStringWidth(stackSize) * scaleFactor) * inverseScaleFactor);
 			final int Y = (int) (((float) par5 + offset + 16.0f - 7.0f * scaleFactor) * inverseScaleFactor);
@@ -100,11 +98,11 @@ public class PRenderItem extends RenderItem {
 				fontRenderer.drawStringWithShadow(stackSize, X, Y, 16777215);
 			}
 
-			GL11.glPopMatrix();
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glEnable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GlStateManager.popMatrix();
+			GlStateManager.enableDepth();
+			GlStateManager.enableBlend();
+			GlStateManager.enableAlpha();
+			GlStateManager.enableLighting();
 			
 
 			fontRenderer.setUnicodeFlag(unicodeFlag);

@@ -13,6 +13,7 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -58,6 +59,37 @@ public class EventsHandler {
 				}
 			}
 		}
+	}
+	
+	@SubscribeEvent
+	public void onItemPickUp(EntityItemPickupEvent e) {
+
+		final EntityPlayer player = e.getEntityPlayer();
+		final ItemStack pickedStack = e.getItem().getEntityItem();
+
+		if (pickedStack == null || player == null) return;
+
+		boolean foundMatchingContainer = false;
+
+		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+			final ItemStack stack = player.inventory.getStackInSlot(i);
+
+			if (stack != null && stack.getItem() instanceof ItemDankNull) {
+				/*
+				final ItemStack containedStack = inventory.getStackInSlot(0);
+				if (containedStack != null) {
+					final boolean isMatching = tester.isEqual(pickedStack, containedStack);
+					if (isMatching) {
+						ItemDistribution.tryInsertStack(inventory, 0, pickedStack, true);
+						if (pickedStack.stackSize == 0) return;
+						foundMatchingContainer = true;
+					}
+				}
+				*/
+			}
+		}
+
+		if (foundMatchingContainer) pickedStack.stackSize = 0;
 	}
 
 	@SubscribeEvent

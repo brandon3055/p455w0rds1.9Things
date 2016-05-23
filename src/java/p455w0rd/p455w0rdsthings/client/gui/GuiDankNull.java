@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import com.google.common.collect.Sets;
 
 import net.minecraft.client.Minecraft;
@@ -32,7 +30,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import p455w0rd.p455w0rdsthings.Globals;
 import p455w0rd.p455w0rdsthings.container.DankNullSlot;
-import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
 public class GuiDankNull extends GuiContainer {
@@ -74,11 +71,11 @@ public class GuiDankNull extends GuiContainer {
 		super(inventorySlotsIn);
 		this.inventorySlots = inventorySlotsIn;
 		this.playerInv = playerInv;
-		if (ItemUtils.getDankNullStack(playerInv) == null) {
+		if (ItemUtils.getDankNull(playerInv) == null) {
 			this.numRows = 6;
 		}
 		else {
-			this.numRows = ItemUtils.getDankNullStack(playerInv).getItemDamage();
+			this.numRows = ItemUtils.getDankNull(playerInv).getItemDamage();
 		}
 		this.ySize += numRows * 18;
 	}
@@ -100,13 +97,16 @@ public class GuiDankNull extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		GL11.glEnable(GL11.GL_BLEND);
+		GlStateManager.enableBlend();
+		//GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.9F);
 		RenderHelper.disableStandardItemLighting();
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		GL11.glTranslatef(0.0f, 0.0f, 0.0f);
-		this.mc.getTextureManager().bindTexture(new ResourceLocation(Globals.MODID, "textures/gui/danknullscreen" + ItemUtils.getDankNullStack(this.mc.thePlayer.inventory).getItemDamage() + ".png"));
+		GlStateManager.disableAlpha();
+		//GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GlStateManager.translate(0.0F, 0.0F, 0.0F);
+		//GL11.glTranslatef(0.0f, 0.0f, 0.0f);
+		this.mc.getTextureManager().bindTexture(new ResourceLocation(Globals.MODID, "textures/gui/danknullscreen" + ItemUtils.getDankNull(this.mc.thePlayer.inventory).getItemDamage() + ".png"));
 		this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 	}
 
@@ -114,27 +114,18 @@ public class GuiDankNull extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.disableLighting();
-		GL11.glDisable(GL11.GL_LIGHTING);
-		//GL11.glDisable(GL11.GL_ALPHA_TEST);
-		//GL11.glDisable(GL11.GL_BLEND);
-		//GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GlStateManager.disableBlend();
 		int fontColor = 0xFFFFFF;
-		if (ItemUtils.getDankNullStack(playerInv).getItemDamage() == 0) {
+		if (ItemUtils.getDankNull(playerInv).getItemDamage() == 0) {
 			fontColor = 0x000;
 		}
-		this.mc.fontRendererObj.drawString(ItemUtils.getDankNullStack(playerInv).getDisplayName(), 7, 7, fontColor);
+		this.mc.fontRendererObj.drawString(ItemUtils.getDankNull(playerInv).getDisplayName(), 7, 7, fontColor);
 		this.mc.fontRendererObj.drawString(I18n.format("container.inventory"), 7, this.ySize - 93, fontColor);
-		if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
+		if (ItemUtils.getItemCount(ItemUtils.getDankNull(playerInv)) != 0) {
 			this.mc.fontRendererObj.drawString("=Selected", this.xSize - 55, 7, fontColor);
 		}
 		GlStateManager.enableBlend();
 		GlStateManager.enableLighting();
-		GL11.glEnable(GL11.GL_LIGHTING);
-		//GL11.glEnable(GL11.GL_ALPHA_TEST);
-		//GL11.glEnable(GL11.GL_BLEND);
-		//GL11.glEnable(GL11.GL_DEPTH_TEST);
-
 	}
 
 	protected List<DankNullSlot> getSlots() {
@@ -217,9 +208,10 @@ public class GuiDankNull extends GuiContainer {
 
 	private void drawItemStack(ItemStack stack, int x, int y, String altText) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GlStateManager.enableLighting();
+		GlStateManager.enableRescaleNormal();
+		GlStateManager.enableDepth();
+		GlStateManager.enableAlpha();
 		GlStateManager.translate(0.0F, 0.0F, 32.0F);
 		this.zLevel = 200.0F;
 		this.itemRender.zLevel = 200.0F;
@@ -231,9 +223,11 @@ public class GuiDankNull extends GuiContainer {
 		this.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 		this.itemRender.renderItemOverlayIntoGUI(font, stack, x, y - (this.draggedStack == null ? 0 : 8), altText);
 		GL11.glPopAttrib();
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		GlStateManager.disableAlpha();
+		GlStateManager.disableLighting();
+		GlStateManager.disableDepth();
+		GlStateManager.disableRescaleNormal();
+
 		this.zLevel = 0.0F;
 		this.itemRender.zLevel = 0.0F;
 	}
@@ -324,9 +318,9 @@ public class GuiDankNull extends GuiContainer {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float) i, (float) j, 0.0F);
 		//GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		//GlStateManager.enableRescaleNormal();
+		GlStateManager.enableRescaleNormal();
 
-		if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
+		if (ItemUtils.getItemCount(ItemUtils.getDankNull(playerInv)) != 0) {
 			this.drawGradientRect(this.xSize - 66, 5, this.xSize - 57, 6, 0xBBFF0000, 0xBBFF0000);
 			this.drawGradientRect(this.xSize - 66, 5, this.xSize - 65, 15, 0xBBFF0000, 0xBBFF0000);
 			this.drawGradientRect(this.xSize - 66, 14, this.xSize - 57, 15, 0xBBFF0000, 0xBBFF0000);
@@ -358,8 +352,8 @@ public class GuiDankNull extends GuiContainer {
 				GlStateManager.enableDepth();
 				GlStateManager.enableBlend();
 			}
-			if (ItemDankNull.getItemCount(ItemUtils.getDankNullStack(playerInv)) != 0) {
-				if (ItemDankNull.getSelectedStackIndex(ItemUtils.getDankNullStack(this.playerInv)) == i1 - 36) {
+			if (ItemUtils.getItemCount(ItemUtils.getDankNull(playerInv)) != 0) {
+				if (ItemUtils.getSelectedStackIndex(ItemUtils.getDankNull(this.playerInv)) == i1 - 36) {
 					GlStateManager.disableLighting();
 					//GlStateManager.disableDepth();
 					//GlStateManager.disableAlpha();
