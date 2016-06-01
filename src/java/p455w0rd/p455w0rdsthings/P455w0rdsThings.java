@@ -15,7 +15,7 @@ import p455w0rd.p455w0rdsthings.proxy.CommonProxy;
 		+ net.minecraftforge.common.ForgeVersion.majorVersion + '.' // majorVersion
 		+ net.minecraftforge.common.ForgeVersion.minorVersion + '.' // minorVersion
 		+ net.minecraftforge.common.ForgeVersion.revisionVersion + '.' // revisionVersion
-		+ net.minecraftforge.common.ForgeVersion.buildVersion + ",)",
+		+ net.minecraftforge.common.ForgeVersion.buildVersion + ",);",
 version = Globals.VERSION)
 public class P455w0rdsThings {
 

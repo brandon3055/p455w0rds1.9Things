@@ -4,7 +4,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class ReflectionUtils {
@@ -21,7 +20,8 @@ public class ReflectionUtils {
 		final Method method = ReflectionHelper.findMethod(clazz, null, methodNames, methodTypes);
 		try {
 			return MethodHandles.lookup().unreflect(method);
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			throw new ReflectionHelper.UnableToFindMethodException(methodNames, e);
 		}
 	}
@@ -38,7 +38,8 @@ public class ReflectionUtils {
 
 		try {
 			return MethodHandles.lookup().unreflectGetter(field);
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			throw new ReflectionHelper.UnableToAccessFieldException(fieldNames, e);
 		}
 	}
@@ -55,8 +56,14 @@ public class ReflectionUtils {
 
 		try {
 			return MethodHandles.lookup().unreflectSetter(field);
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			throw new ReflectionHelper.UnableToAccessFieldException(fieldNames, e);
 		}
+	}
+
+	public static void setPublic(Class<?> clazz, String[] methodNames, Class<?>... methodTypes) throws Exception {
+		final Method method = ReflectionHelper.findMethod(clazz, null, methodNames, methodTypes);
+		method.setAccessible(true);
 	}
 }

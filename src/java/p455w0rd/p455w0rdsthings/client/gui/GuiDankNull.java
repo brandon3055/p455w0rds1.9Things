@@ -29,7 +29,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import p455w0rd.p455w0rdsthings.Globals;
-import p455w0rd.p455w0rdsthings.container.DankNullSlot;
+import p455w0rd.p455w0rdsthings.client.render.PRenderItem;
+import p455w0rd.p455w0rdsthings.inventory.slot.DankNullSlot;
 import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
 public class GuiDankNull extends GuiContainer {

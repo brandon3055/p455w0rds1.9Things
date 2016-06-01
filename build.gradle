@@ -47,7 +47,7 @@ repositories {
 
 dependencies {
 	deobfCompile "mezz.jei:jei_1.9:+"
-	deobfCompile "codechicken:CodeChickenLib:1.9-2.0.1.30:deobf"
+	compile "codechicken:CodeChickenLib:1.9-2.0.1.30:deobf"
 }
 
 processResources
@@ -56,4 +56,8 @@ processResources
         include 'mcmod.info'
         expand 'version': project.version, 'mcversion': minecraft_version
     } exclude 'mcmod.info'
+}
+def commonManifest = {
+    attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
+    attributes 'FMLAT': 'p455w0rdsthings_at.cfg'
 }

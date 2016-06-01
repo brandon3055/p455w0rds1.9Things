@@ -7,7 +7,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
 public class PacketSetSelectedItem implements IMessage {
@@ -33,16 +32,11 @@ public class PacketSetSelectedItem implements IMessage {
 	public static class Handler implements IMessageHandler<PacketSetSelectedItem, IMessage> {
 		@Override
 		public IMessage onMessage(PacketSetSelectedItem message, MessageContext ctx) {
-			// Always use a construct like this to actually handle your message. This ensures that
-			// youre 'handle' code is run on the main Minecraft thread. 'onMessage' itself
-			// is called on the networking thread so it is not safe to do a lot of things
-			// here.
 			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 
 		private void handle(PacketSetSelectedItem message, MessageContext ctx) {
-			// This code is run on the server side. So you can do server-side calculations here
 			EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 			ItemStack dankNullItem = ItemUtils.getDankNull(player.inventory);
 			if (dankNullItem != null) {

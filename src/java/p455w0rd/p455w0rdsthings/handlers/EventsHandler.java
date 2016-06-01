@@ -1,24 +1,36 @@
 package p455w0rd.p455w0rdsthings.handlers;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import p455w0rd.p455w0rdsthings.Globals;
+import p455w0rd.p455w0rdsthings.ModBlocks;
+import p455w0rd.p455w0rdsthings.ModItems;
 import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 import p455w0rd.p455w0rdsthings.util.CapeUtils;
 import p455w0rd.p455w0rdsthings.util.ItemUtils;
@@ -63,34 +75,64 @@ public class EventsHandler {
 	}
 	
 	@SubscribeEvent
+	public void onBucketFill(FillBucketEvent event) {
+		IBlockState state = event.getWorld().getBlockState(event.getTarget().getBlockPos());
+	    if (state.getBlock() == ModBlocks.xpJuiceBlock) {
+	    	if (((IFluidBlock) state.getBlock()).getFilledPercentage(event.getWorld(), event.getTarget().getBlockPos()) == 1) {
+	    		event.setFilledBucket(new ItemStack(ModItems.xpJuiceBucket));
+	    		event.getWorld().setBlockState(event.getTarget().getBlockPos(), Blocks.air.getDefaultState(), 11);
+	    		event.setResult(Result.ALLOW);
+	    		return;
+	    	}
+	    	event.setResult(Result.DENY);
+	    }
+	    
+	}
+	
+	@SubscribeEvent
+	public void onFogRender(EntityViewRenderEvent.FogColors e) {
+		IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(e.getEntity().getEntityWorld(), e.getEntity(), (float) e.getRenderPartialTicks());
+		if (iblockstate.getBlock() == ModBlocks.xpJuiceBlock) {
+			float f12 = 0.0F;
+			EntityLivingBase entity = (EntityLivingBase) e.getEntity();
+
+            if (entity instanceof EntityLivingBase)
+            {
+                f12 = (float)EnchantmentHelper.getRespirationModifier((EntityLivingBase)entity) * 0.2F;
+
+                if (((EntityLivingBase)entity).isPotionActive(MobEffects.waterBreathing))
+                {
+                    f12 = f12 * 0.3F + 0.6F;
+                }
+            }
+            
+            e.setRed(0.02F + 0);
+            e.setBlue(0.02F + f12);
+            e.setGreen(0.02F + 0);
+            e.setResult(Result.DENY);
+            return;
+		}
+	}
+	
+	@SubscribeEvent
 	public void onItemPickUp(EntityItemPickupEvent e) {
-
 		final EntityPlayer player = e.getEntityPlayer();
-		final ItemStack pickedStack = e.getItem().getEntityItem();
-
-		if (pickedStack == null || player == null) return;
-
-		boolean foundMatchingContainer = false;
+		final ItemStack entityStack = e.getItem().getEntityItem();
+		if (entityStack == null || player == null) {
+			return;
+		}
 
 		for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 			final ItemStack stack = player.inventory.getStackInSlot(i);
 
 			if (stack != null && stack.getItem() instanceof ItemDankNull) {
-				/*
-				final ItemStack containedStack = inventory.getStackInSlot(0);
-				if (containedStack != null) {
-					final boolean isMatching = tester.isEqual(pickedStack, containedStack);
-					if (isMatching) {
-						ItemDistribution.tryInsertStack(inventory, 0, pickedStack, true);
-						if (pickedStack.stackSize == 0) return;
-						foundMatchingContainer = true;
+				if (ItemUtils.isFiltered(stack, entityStack) != null) {
+					if (ItemUtils.addFilteredStackToDankNull(stack, entityStack)) {
+						entityStack.stackSize = 0;
 					}
 				}
-				*/
 			}
 		}
-
-		if (foundMatchingContainer) pickedStack.stackSize = 0;
 	}
 
 	@SubscribeEvent
@@ -171,14 +213,4 @@ public class EventsHandler {
 			}
 		}
 	}
-
-	/*
-	 * @SubscribeEvent public void renderHandEvent(RenderHandEvent e) {
-	 * RenderGlobal test = e.getContext();
-	 * 
-	 * if (test != null) { //System.out.println(test.toString()); }
-	 * net.minecraftforge.client.event.RenderHandEvent event =
-	 * ForgeHooksClient.renderFirstPersonHand(e.getContext(),
-	 * e.getPartialTicks(), e.getRenderPass()); }
-	 */
 }

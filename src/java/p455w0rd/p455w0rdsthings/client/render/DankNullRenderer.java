@@ -145,6 +145,10 @@ public class DankNullRenderer implements IItemRenderer {
 				timer = 0.0F;
 			}
 			timer += 0.25F;
+			if (item.isOnItemFrame()) {
+				GlStateManager.scale(1.25D, 1.25D, 1.25D);
+				GlStateManager.translate(-0.2D, -0.2D, -0.5D);
+			}
 			if (containedItemModel.isBuiltInRenderer()) {
 				GlStateManager.translate(-0.0D, 0.0D, -0.0D);
 
@@ -154,7 +158,7 @@ public class DankNullRenderer implements IItemRenderer {
 			else {
 				GlStateManager.rotate(timer, 1.0F, 1.0F, 1.0F);
 			}
-
+			
 			containedItemModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(containedItemModel, ItemCameraTransforms.TransformType.NONE, false);
 			renderItem(containedStack, containedItemModel);
 			/*
@@ -183,12 +187,15 @@ public class DankNullRenderer implements IItemRenderer {
 		GlStateManager.enableBlend();
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.pushMatrix();
-
+		if (item.isOnItemFrame()) {
+			GlStateManager.scale(1.25D, 1.25D, 1.25D);
+			GlStateManager.translate(-0.1D, -0.1D, -0.25D);
+		}
 		holderModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(holderModel, ItemCameraTransforms.TransformType.NONE, false);
 		renderItem(item, holderModel);
 
 		GlStateManager.popMatrix();
-		GlStateManager.disableBlend();
+		//GlStateManager.disableBlend();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableLighting();
 		/*
@@ -246,11 +253,13 @@ public class DankNullRenderer implements IItemRenderer {
 			if (flag && bakedquad.hasTintIndex()) {
 				ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 				k = itemColors.getColorFromItemstack(stack, bakedquad.getTintIndex());
+				//k=0x00FF00;
 
 				if (EntityRenderer.anaglyphEnable) {
 					k = TextureUtil.anaglyphColor(k);
 				}
 				k = k | -16777216;
+				//k = k | 0x00FF00;
 			}
 			net.minecraftforge.client.model.pipeline.LightUtil.renderQuadColor(renderer, bakedquad, k);
 		}
@@ -272,7 +281,12 @@ public class DankNullRenderer implements IItemRenderer {
 				this.renderModel(model, stack);
 
 				if (stack.hasEffect()) {
-					this.renderEffect(model);
+					if (stack.getItem() instanceof ItemDankNull) {
+						this.renderEffect2(model);
+					}
+					else {
+						this.renderEffect(model);
+					}
 				}
 			}
 
@@ -301,6 +315,39 @@ public class DankNullRenderer implements IItemRenderer {
 		GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
 		this.renderModel(model, -8372020);
 		GlStateManager.popMatrix();
+		GlStateManager.matrixMode(5888);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableLighting();
+		GlStateManager.depthFunc(515);
+		GlStateManager.depthMask(true);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+	}
+	
+	private void renderEffect2(IBakedModel model) {
+		GlStateManager.depthMask(false);
+		GlStateManager.depthFunc(514);
+		GlStateManager.disableLighting();
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("minecraft", "textures/misc/enchanted_item_glint.png"));
+		GlStateManager.matrixMode(5890);
+		GlStateManager.pushMatrix();
+		GlStateManager.scale(8.0F, 8.0F, 8.0F);
+		float f = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
+		GlStateManager.translate(f, 0.0F, 0.0F);
+		GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
+		//this.renderModel(model, -8372020);
+		this.renderModel(model, 0xFFFFFF00);
+		GlStateManager.popMatrix();
+		/*
+		GlStateManager.pushMatrix();
+		GlStateManager.scale(8.0F, 8.0F, 8.0F);
+		float f1 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
+		GlStateManager.translate(-f1, 0.0F, 0.0F);
+		GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
+		//this.renderModel(model, -8372020);
+		this.renderModel(model, 0xFFFFFF00);
+		GlStateManager.popMatrix();
+		*/
 		GlStateManager.matrixMode(5888);
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.enableLighting();

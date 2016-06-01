@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import p455w0rd.p455w0rdsthings.handlers.PacketHandler;
 import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 import p455w0rd.p455w0rdsthings.network.PacketSetSelectedItem;
@@ -225,11 +227,59 @@ public class ItemUtils {
 		return null;
 	}
 	
-	// Utilities for manipulating /dank/null inventory item stacks directly
 	
-	public static void decrDankNullStackSize(ItemStack itemStackIn, long amount) {
-		long newStackSize = getDankNullStackSize(itemStackIn) - amount;
+	public static ItemStack isFiltered(ItemStack itemStackIn, ItemStack filteredStack) {
+		if (!itemStackIn.hasTagCompound() || !itemStackIn.getTagCompound().hasKey("danknull-inventory")) {
+			return null;
+		}
 		NBTTagCompound nbtTC = itemStackIn.getTagCompound();
+		NBTTagList itemList = nbtTC.getTagList("danknull-inventory", 10);
+		if (itemList != null) {
+			for (int i = 0; i < itemList.tagCount(); i++) {
+				if (itemList.getCompoundTagAt(i) != null) {
+					ItemStack currentItem = ItemStack.loadItemStackFromNBT(itemList.getCompoundTagAt(i));
+					if (currentItem != null && areItemsEqual(currentItem, filteredStack)) {
+						return currentItem;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static boolean addFilteredStackToDankNull(ItemStack itemStackIn, ItemStack newStack) {
+		ItemStack filteredStack = isFiltered(itemStackIn, newStack);
+		if (filteredStack != null) {
+			long maxStackSize = getDankNullMaxStackSize(itemStackIn);
+			long currentFilteredStackSize = getDankNullStackSize(filteredStack);
+			long itemToAddStackSize = newStack.stackSize;
+			if (currentFilteredStackSize + itemToAddStackSize > maxStackSize) {
+				setDankNullStackSize(filteredStack, maxStackSize);
+			}
+			else {
+				setDankNullStackSize(filteredStack, currentFilteredStackSize + itemToAddStackSize);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	// Utilities for manipulating /dank/null inventory item stacks directly
+
+	public static void setDankNullStackSize(ItemStack dankNullStack, long amount) {
+		if (isDankNullStack(dankNullStack)) {
+			dankNullStack.getTagCompound().setLong("p455w0rd.StackSize", amount);
+		}
+	}
+	
+	public static ItemStack getDankNullStack(ItemStack itemStackIn, ItemStack filteredStack) {
+		
+		return null;
+	}
+	
+	public static void decrDankNullStackSize(ItemStack dankNullStack, ItemStack itemStackIn, long amount) {
+		long newStackSize = getDankNullStackSize(dankNullStack) - amount;
+		NBTTagCompound nbtTC = dankNullStack.getTagCompound();
 		if (newStackSize >= 1) {
 			nbtTC.setLong("p455w0rd.StackSize", newStackSize);
 		}
@@ -277,6 +327,19 @@ public class ItemUtils {
 	
 	public static boolean areItemsEqual(ItemStack is1, ItemStack itemStackIn) {
 		return (is1.getItem() == itemStackIn.getItem() && is1.getItemDamage() == itemStackIn.getItemDamage() && areItemTagsEqual(is1, itemStackIn));
+	}
+	
+	public static void dropItemStackInWorld(World worldObj, double x, double y, double z, ItemStack stack) {
+		float f = 0.7F;
+		float d0 = worldObj.rand.nextFloat() * f + (1.0F - f) * 0.5F;
+		float d1 = worldObj.rand.nextFloat() * f + (1.0F - f) * 0.5F;
+		float d2 = worldObj.rand.nextFloat() * f + (1.0F - f) * 0.5F;
+		EntityItem entityitem = new EntityItem(worldObj, x + d0, y + d1, z + d2, stack);
+		entityitem.setPickupDelay(10);
+		if (stack.hasTagCompound()) {
+			entityitem.getEntityItem().setTagCompound((NBTTagCompound) stack.getTagCompound().copy());
+		}
+		worldObj.spawnEntityInWorld(entityitem);
 	}
 
 }

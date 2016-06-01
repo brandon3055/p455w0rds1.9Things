@@ -9,15 +9,15 @@ public enum ReadableNumberConverter {
 	INSTANCE;
 
 	/**
-	 * Defines the base for a division, non-si standard could be 1024 for
-	 * kilobytes
+	 * String representation of the sorted suffixes
+	 * K = thousand
+	 * M = Million
+	 * B = Billion
+	 * T = Trillion
+	 * Qa = Quadrillion
+	 * Qi = Quintillion
 	 */
-	private static final int DIVISION_BASE = 1000;
-
-	/**
-	 * String representation of the sorted postfixes
-	 */
-	private static final char[] ENCODED_POSTFIXES = "KMGTPE".toCharArray();
+	private static final String[] ENCODED_SUFFIXES = { "K", "M", "B", "T", "Qa", "Qi" };
 
 	private final Format format;
 
@@ -66,16 +66,16 @@ public enum ReadableNumberConverter {
 
 		while (numberSize > width) {
 			last = base;
-			base /= DIVISION_BASE;
+			base /= 1000;
 
 			exponent++;
 
 			// adds +1 due to the postfix
 			numberSize = Long.toString(base).length() + 1;
-			postFix = String.valueOf(ENCODED_POSTFIXES[exponent]);
+			postFix = ENCODED_SUFFIXES[exponent];
 		}
 
-		final String withPrecision = this.format.format(last / DIVISION_BASE) + postFix;
+		final String withPrecision = this.format.format(last / 1000) + postFix;
 		final String withoutPrecision = Long.toString(base) + postFix;
 
 		final String slimResult = (withPrecision.length() <= width) ? withPrecision : withoutPrecision;

@@ -112,6 +112,26 @@ public class ItemDankNull extends Item {
 				return EnumActionResult.FAIL;
 			}
 			if (!(selectedStack.getItem() instanceof ItemBlock)) {
+				/*
+				if (selectedStack.getItem() instanceof ItemBucket) {
+					boolean flag = Block.getBlockFromItem(((ItemBucket) selectedStack.getItem()).getContainerItem()) != Blocks.air;
+					RayTraceResult ray = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, flag);
+					//ActionResult<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onBucketUse(playerIn, worldIn, selectedStack, raytraceresult);
+					BlockPos blockPos = new BlockPos(ray.hitVec);
+					//if (((ItemBucket) selectedStack.getItem()).tryPlaceContainedLiquid(playerIn, worldIn, blockPos)) {
+					//if (selectedStack.onItemUse(playerIn, worldIn, pos, hand, facing, blockPos.getX(), blockPos.getY(), blockPos.getZ()) != EnumActionResult.FAIL) {
+					if (selectedStack.getItem().onItemRightClick(selectedStack, worldIn, playerIn, hand) != ActionResult.newResult(EnumActionResult.FAIL, selectedStack)) {
+						worldIn.getBlockState(blockPos).getBlock().onBlockAdded(worldIn, blockPos, worldIn.getBlockState(blockPos));
+						if (!playerIn.capabilities.isCreativeMode) {
+							ItemUtils.decrSelectedStackSize(stack, 1);
+							if (!playerIn.inventory.addItemStackToInventory(new ItemStack(Items.bucket))) {
+								playerIn.dropPlayerItemWithRandomChoice(new ItemStack(Items.bucket), false);
+								return EnumActionResult.SUCCESS;
+							}
+						}
+					}
+				}
+				*/
 				return EnumActionResult.FAIL;
 			}
 			((ItemBlock) selectedStack.getItem()).getBlock();
