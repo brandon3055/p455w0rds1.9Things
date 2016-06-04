@@ -39,7 +39,7 @@ public class BlockBattery extends Block implements ITileEntityProvider {
 		setHardness(5.6F);
 		GameRegistry.register(this);
 		GameRegistry.register(new ItemBlock(this), getRegistryName());
-		//GameRegistry.registerTileEntity(TileEntityBattery.class, name);
+		GameRegistry.registerTileEntity(TileEntityBattery.class, name);
 	}
 	
 	
@@ -71,7 +71,7 @@ public class BlockBattery extends Block implements ITileEntityProvider {
 	@SideOnly(Side.CLIENT)
 	public void initModel() {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
-		ClientRegistry.registerTileEntity(TileEntityBattery.class, name, new TESRBattery());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBattery.class, new TESRBattery());
 	}
 	
 	@Override

@@ -34,7 +34,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		maxExtract = 2000;
 		batteryInv = new ItemStack[5];
 		energyStorage = new EnergyStorage(capacity, maxReceive);
-		energyStorage.setEnergyStored(10000);
+		this.energyStorage.setEnergyStored(10000);
 	}
 	
 	@Override
@@ -42,7 +42,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		super.readFromNBT(tagCompound);
 		NBTTagCompound energyTag = tagCompound.getCompoundTag("Energy");
 		this.energyStorage.readFromNBT(energyTag);
-
+/*
 		NBTTagList nbtTL = tagCompound.getTagList(this.getName(), 10);
 		for (int i = 0; i < nbtTL.tagCount(); i++) {
 			NBTTagCompound nbtTC = (NBTTagCompound) nbtTL.getCompoundTagAt(i);
@@ -52,6 +52,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 			int slot = nbtTC.getInteger("Slot");
 			this.batteryInv[slot] = ItemStack.loadItemStackFromNBT(nbtTC);
 		}
+		*/
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		NBTTagCompound energyTag = new NBTTagCompound();
 		this.energyStorage.writeToNBT(energyTag);
 		tagCompound.setTag("Energy", energyTag);
-
+/*
 		NBTTagList nbtTL = new NBTTagList();
 		for (int i = 0; i < this.batteryInv.length; i++) {
 			if (batteryInv[i] == null) {
@@ -71,10 +72,11 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 			batteryInv[i].writeToNBT(nbtTC);
 			nbtTL.appendTag(nbtTC);
 		}
-		tagCompound.setTag(this.getName(), nbtTL);		
+		tagCompound.setTag(this.getName(), nbtTL);	
+		*/	
 		return tagCompound;
 	}
-
+/*
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbtTag = new NBTTagCompound();
@@ -86,7 +88,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 		this.readFromNBT(packet.getNbtCompound());
 	}
-
+*/
 	public IEnergyStorage getEnergyStorage() {
 		return this.energyStorage;
 	}

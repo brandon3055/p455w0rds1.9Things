@@ -25,19 +25,24 @@ public class TESRFurnace extends TileEntitySpecialRenderer<TileEntityFurnace> {
 
 	private float rotation;
 	private final List<TileEntityBeacon.BeamSegment> beamSegments = Lists.<TileEntityBeacon.BeamSegment>newArrayList();
-	private float ticks = 0;
+	private float ticks;
 	private TileEntityFurnace furnaceTE;
+	
+	public TESRFurnace() {
+		ticks = 0;
+		rotation = 90F;
+	}
 
 	@Override
 	public void renderTileEntityAt(TileEntityFurnace te, double x, double y, double z, float partialTicks, int destroyStage) {
 		furnaceTE = te;
         this.beamSegments.clear();
         this.beamSegments.add(new TileEntityBeacon.BeamSegment(EntitySheep.getDyeRgb(EnumDyeColor.WHITE)));
-        if (getWorld().canBlockSeeSky(te.getPos()) && te.getInputSlotStack() != null) {
-        	this.renderBeacon(x, y+0.5, z, (double)partialTicks, (double)te.getWorld().getTotalWorldTime()+ticks, this.beamSegments, (double)te.getWorld().getTotalWorldTime());
+        if (getWorld().canBlockSeeSky(getTE().getPos()) && te.getInputSlotStack() != null) {
+        	this.renderBeacon(x, y+0.5, z, (double)partialTicks, (double)getTE().getWorld().getTotalWorldTime()+ticks, this.beamSegments, (double)getTE().getWorld().getTotalWorldTime());
         }
         else {
-        	ticks = 0;
+        	this.ticks = 0;
         }
 		
 		GlStateManager.pushAttrib();
@@ -70,7 +75,7 @@ public class TESRFurnace extends TileEntitySpecialRenderer<TileEntityFurnace> {
 			}
 			
 			if (getWorld().canBlockSeeSky(te.getPos()) && !Minecraft.getMinecraft().isGamePaused()) {
-				if (ticks >= 255) {
+				if (this.ticks >= 255) {
 					int x = te.getPos().getX();
 					int y = te.getPos().getY();
 					int z = te.getPos().getZ();
@@ -116,17 +121,17 @@ public class TESRFurnace extends TileEntitySpecialRenderer<TileEntityFurnace> {
     }
     
     public TileEntityFurnace getTE() {
-    	return furnaceTE;
+    	return this.furnaceTE;
     }
 
     public void renderBeamSegment(double p_188205_0_, double p_188205_2_, double p_188205_4_, double p_188205_6_, double p_188205_8_, double p_188205_10_, int p_188205_12_, int p_188205_13_, float[] p_188205_14_, double p_188205_15_, double p_188205_17_)
     {
-    	if (ticks < 255) {
+    	if (this.ticks < 255) {
     		if (getTE().getInputSlotStack() != null) {
-    			ticks++;
+    			this.ticks++;
     		}
     		else {
-    			ticks = 0;
+    			this.ticks = 0;
     		}
     	}
         int i = p_188205_12_ + p_188205_13_;

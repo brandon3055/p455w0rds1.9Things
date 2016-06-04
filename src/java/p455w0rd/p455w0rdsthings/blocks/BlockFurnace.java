@@ -46,7 +46,7 @@ public class BlockFurnace extends Block implements ITileEntityProvider {
 		setLightLevel(1.0F);
 		GameRegistry.register(this);
 		GameRegistry.register(new ItemBlock(this), getRegistryName());
-
+		GameRegistry.registerTileEntity(TileEntityFurnace.class, name);
 		isBlockContainer = true;
 	}
 
@@ -94,7 +94,7 @@ public class BlockFurnace extends Block implements ITileEntityProvider {
 	@SideOnly(Side.CLIENT)
 	public void initModel() {
 		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
-		ClientRegistry.registerTileEntity(TileEntityFurnace.class, name, new TESRFurnace());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFurnace.class, new TESRFurnace());
 	}
 
 	@Override

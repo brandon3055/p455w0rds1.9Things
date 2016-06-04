@@ -21,7 +21,7 @@ public class GuiFurnace extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
-		this.mc.fontRendererObj.drawString("Compressor", 8, 6, 4210752);
+		this.mc.fontRendererObj.drawString("Furnace", 8, 6, 4210752);
 		this.mc.fontRendererObj.drawString(compressorTE.getEnergyStored(EnumFacing.DOWN) + "/" + compressorTE.getMaxEnergyStored(EnumFacing.DOWN) + " RF", 8, 40, 4210752);
 	}
 
