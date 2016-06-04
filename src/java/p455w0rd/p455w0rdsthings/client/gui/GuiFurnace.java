@@ -12,17 +12,17 @@ public class GuiFurnace extends GuiContainer {
 	
 	private ResourceLocation GUITexture = new ResourceLocation(Globals.MODID, "textures/gui/compressor.png");
 
-	private TileEntityFurnace compressorTE;
+	private TileEntityFurnace furnaceTE;
 	
 	public GuiFurnace(InventoryPlayer inventoryPlayer, TileEntityFurnace te) {
 		super(new ContainerFurnace(inventoryPlayer, te));
-		compressorTE = te;
+		this.furnaceTE = te;
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int param1, int param2) {
 		this.mc.fontRendererObj.drawString("Furnace", 8, 6, 4210752);
-		this.mc.fontRendererObj.drawString(compressorTE.getEnergyStored(EnumFacing.DOWN) + "/" + compressorTE.getMaxEnergyStored(EnumFacing.DOWN) + " RF", 8, 40, 4210752);
+		this.mc.fontRendererObj.drawString(this.furnaceTE.getEnergyStored(null) + "/" + this.furnaceTE.getMaxEnergyStored(EnumFacing.DOWN) + " RF", 8, 40, 4210752);
 	}
 
 	@Override

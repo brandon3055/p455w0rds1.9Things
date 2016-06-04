@@ -10,6 +10,8 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -36,7 +38,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		batteryInv = new ItemStack[invSize];
 		energyStorage = new EnergyStorage(capacity, maxReceive);
 		this.energyStorage.setEnergyStored(10000);
-		readFromNBT(this.getTileData());
+		//readFromNBT(this.getTileData());
 	}
 	
 	@Override
@@ -44,6 +46,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		super.readFromNBT(tagCompound);
 		NBTTagCompound energyTag = tagCompound.getCompoundTag("Energy");
 		this.energyStorage.readFromNBT(energyTag);
+		
 
 		NBTTagList nbtTL = tagCompound.getTagList(this.getName(), 10);
 		for (int i = 0; i < nbtTL.tagCount(); i++) {
@@ -77,7 +80,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 
 		return tagCompound;
 	}
-/*
+
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbtTag = new NBTTagCompound();
@@ -89,7 +92,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 		this.readFromNBT(packet.getNbtCompound());
 	}
-*/
+
 	public IEnergyStorage getEnergyStorage() {
 		return this.energyStorage;
 	}
@@ -101,12 +104,20 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 
 	@Override
 	public int receiveEnergy(EnumFacing from, int maxExtract, boolean simulate) {
-		return energyStorage.receiveEnergy(maxExtract, simulate);
+		int tosend = energyStorage.receiveEnergy(maxExtract, simulate);
+		if (tosend > 0 && !simulate) {
+			this.markDirty();
+		}
+		return tosend;
 	}
 	
 	@Override
 	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
-		return energyStorage.extractEnergy(maxExtract, simulate);
+		int toget = energyStorage.extractEnergy(maxExtract, simulate);
+		if (toget > 0 && !simulate) {
+			this.markDirty();
+		}
+		return toget;
 	}
 
 	@Override
@@ -134,6 +145,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 
 
 	public void setEnergyStored(int energy) {
+		this.markDirty();
 		this.energyStorage.setEnergyStored(energy);
 	}
 	

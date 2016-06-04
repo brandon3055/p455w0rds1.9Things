@@ -199,15 +199,15 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 
 	@Override
 	public int receiveEnergy(EnumFacing from, int maxExtract, boolean simulate) {
-		return energyStorage.receiveEnergy(maxExtract, simulate);
+		int tosend = energyStorage.receiveEnergy(maxExtract, simulate);
+		if (tosend > 0 && !simulate) {
+			this.markDirty();
+		}
+		return tosend;
 	}
 
 	@Override
 	public void update() {
-		handleReceivingEnergy();
-	}
-
-	private void handleReceivingEnergy() {
 		if (worldObj.isRemote) {
 			return;
 		}
@@ -222,7 +222,7 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 				IEnergyProvider provider = (IEnergyProvider) tile;
 
 				if (provider.canConnectEnergy(dir.getOpposite())) {
-					int toget = energyStorage.receiveEnergy(this.maxReceive, true);
+					int toget = this.energyStorage.receiveEnergy(this.maxReceive, true);
 					int received = ((IEnergyProvider) tile).extractEnergy(dir.getOpposite(), toget, false);
 					// TODO: need this? It doesn't really *need* state saved
 					if (received > 0) {

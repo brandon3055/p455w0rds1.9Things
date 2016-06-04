@@ -2,6 +2,7 @@ package p455w0rd.p455w0rdsthings.blocks.tileentities;
 
 import java.util.List;
 
+import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyConnection;
 import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
@@ -27,10 +28,10 @@ import p455w0rd.p455w0rdsthings.util.ItemUtils;
 public class TileEntityFurnace extends TileEntity implements ITickable, ISidedInventory, IEnergyReceiver {
 
 	protected ItemStack[] furnaceInv;
-	protected int energy;
 	protected int capacity;
 	protected int maxReceive;
 	protected int maxExtract;
+	protected EnergyStorage energyStorage;
 	private boolean isProcessing;
 	private float pctCompleted;
 	
@@ -39,9 +40,10 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 		maxReceive = 200;
 		maxExtract = 200;
 		furnaceInv = new ItemStack[2];
+		energyStorage = new EnergyStorage(capacity, maxReceive);
 		readFromNBT(this.getTileData());
 	}
-	/*
+	
 	@Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound nbtTag = new NBTTagCompound();
@@ -53,7 +55,7 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         this.readFromNBT(packet.getNbtCompound());
     }
-    */
+    
     @SideOnly(Side.CLIENT)
     @Override
     public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox()
@@ -154,16 +156,16 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 
 	@Override
 	public int getEnergyStored(EnumFacing from) {
-		return energy;
+		return energyStorage.getEnergyStored();
 	}
 	
 	public int getEnergy() {
-		return energy;
+		return getEnergyStored(null);
 	}
 
 	@Override
 	public int getMaxEnergyStored(EnumFacing from) {
-		return capacity;
+		return energyStorage.getMaxEnergyStored();
 	}
 	
 	public int getMaxExtract() {
@@ -183,13 +185,6 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 		}
 		return false;
 	}
-	
-	public int useEnergy(int amount) {
-		if (getEnergy() >= amount) {
-			return setEnergyStored(getEnergy() - amount);
-		}
-		return -1;
-	}
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
@@ -200,24 +195,21 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 	}
 
 	@Override
-	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
-		int energyReceived = Math.min(capacity - energy, Math.min(this.maxReceive, maxReceive));
-
-		if (!simulate) {
-			energy += energyReceived;
+	public int receiveEnergy(EnumFacing from, int maxExtract, boolean simulate) {
+		int tosend = energyStorage.receiveEnergy(maxExtract, simulate);
+		if (tosend > 0 && !simulate) {
+			this.markDirty();
 		}
-		return energyReceived;
+		return tosend;
 	}
 
-	public int setEnergyStored(int energy) {
-		this.energy = energy;
-
-		if (this.energy > capacity) {
-			this.energy = capacity;
-		} else if (this.energy < 0) {
-			this.energy = 0;
-		}
-		return this.energy;
+	public void setEnergyStored(int energy) {
+		this.markDirty();
+		this.energyStorage.setEnergyStored(energy);
+	}
+	
+	public EnergyStorage getEnergyStorage() {
+		return this.energyStorage;
 	}
 	
 	@Override
@@ -230,8 +222,8 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 
 	private void handleReceivingEnergy() {
 		if (!worldObj.isRemote) {
-			int energyStored = this.energy;
-			int maxEnergy = this.capacity;
+			int energyStored = getEnergy();
+			int maxEnergy = getMaxEnergyStored(null);
 			if (energyStored >= maxEnergy) {
 				return;
 			}
@@ -277,12 +269,9 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
-		if (tagCompound == null) {
-			return;
-		}
-		if (tagCompound.hasKey("Energy")) {
-			setEnergyStored(tagCompound.getInteger("Energy"));
-		}
+		super.readFromNBT(tagCompound);
+		NBTTagCompound energyTag = tagCompound.getCompoundTag("Energy");
+		this.energyStorage.readFromNBT(energyTag);
 		
 		NBTTagList nbtTL = tagCompound.getTagList(this.getName(), 10);
 		for (int i = 0; i < nbtTL.tagCount(); i++) {
@@ -293,18 +282,14 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 			int slot = nbtTC.getInteger("Slot");
 			this.furnaceInv[slot] = ItemStack.loadItemStackFromNBT(nbtTC);
 		}
-		super.readFromNBT(tagCompound);
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-		if (tagCompound == null) {
-			tagCompound = new NBTTagCompound();
-		}
-		if (energy < 0) {
-			energy = 0;
-		}
-		tagCompound.setInteger("Energy", energy);
+		tagCompound = super.writeToNBT(tagCompound);
+		NBTTagCompound energyTag = new NBTTagCompound();
+		this.energyStorage.writeToNBT(energyTag);
+		tagCompound.setTag("Energy", energyTag);
 		
 		NBTTagList nbtTL = new NBTTagList();
 		for (int i = 0; i < this.furnaceInv.length; i++) {

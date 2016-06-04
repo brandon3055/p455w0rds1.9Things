@@ -82,4 +82,15 @@ public class ContainerBattery extends Container {
 		}
 		return stack;
 	}
+	
+	@Override
+	public void detectAndSendChanges() {
+		super.detectAndSendChanges();
+		
+	}
+	
+	@Override
+	public void updateProgressBar(int id, int data) {
+		super.updateProgressBar(id, data);
+	}
 }
