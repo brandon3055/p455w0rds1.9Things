@@ -40,21 +40,21 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 		maxExtract = 200;
 		compressorInv = new ItemStack[numSlots];
 		energyStorage = new EnergyStorage(capacity, maxReceive);
+		readFromNBT(this.getTileData());
 	}
 
-	/*
-		@Override
-		public SPacketUpdateTileEntity getUpdatePacket() {
-			NBTTagCompound nbtTag = new NBTTagCompound();
-			this.writeToNBT(nbtTag);
-			return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
-		}
-	
-		@Override
-		public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-			this.readFromNBT(packet.getNbtCompound());
-		}
-	*/
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		NBTTagCompound nbtTag = new NBTTagCompound();
+		this.writeToNBT(nbtTag);
+		return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+		this.readFromNBT(packet.getNbtCompound());
+	}
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
@@ -205,11 +205,6 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 	@Override
 	public void update() {
 		handleReceivingEnergy();
-		/*
-		markDirty();
-		final IBlockState state = getWorld().getBlockState(getPos());
-		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-		*/
 	}
 
 	private void handleReceivingEnergy() {
@@ -264,17 +259,17 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 		super.readFromNBT(tagCompound);
 		NBTTagCompound energyTag = tagCompound.getCompoundTag("Energy");
 		this.energyStorage.readFromNBT(energyTag);
-		/*
-				NBTTagList nbtTL = tagCompound.getTagList(this.getName(), 10);
-				for (int i = 0; i < nbtTL.tagCount(); i++) {
-					NBTTagCompound nbtTC = (NBTTagCompound) nbtTL.getCompoundTagAt(i);
-					if (nbtTC == null) {
-						continue;
-					}
-					int slot = nbtTC.getInteger("Slot");
-					this.compressorInv[slot] = ItemStack.loadItemStackFromNBT(nbtTC);
-				}
-				*/
+
+		NBTTagList nbtTL = tagCompound.getTagList(this.getName(), 10);
+		for (int i = 0; i < nbtTL.tagCount(); i++) {
+			NBTTagCompound nbtTC = (NBTTagCompound) nbtTL.getCompoundTagAt(i);
+			if (nbtTC == null) {
+				continue;
+			}
+			int slot = nbtTC.getInteger("Slot");
+			this.compressorInv[slot] = ItemStack.loadItemStackFromNBT(nbtTC);
+		}
+
 	}
 
 	@Override
@@ -283,19 +278,19 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 		NBTTagCompound energyTag = new NBTTagCompound();
 		this.energyStorage.writeToNBT(energyTag);
 		tagCompound.setTag("Energy", energyTag);
-		/*
-				NBTTagList nbtTL = new NBTTagList();
-				for (int i = 0; i < this.compressorInv.length; i++) {
-					if (compressorInv[i] == null) {
-						continue;
-					}
-					NBTTagCompound nbtTC = new NBTTagCompound();
-					nbtTC.setInteger("Slot", i);
-					compressorInv[i].writeToNBT(nbtTC);
-					nbtTL.appendTag(nbtTC);
-				}
-				tagCompound.setTag(this.getName(), nbtTL);
-				*/
+
+		NBTTagList nbtTL = new NBTTagList();
+		for (int i = 0; i < this.compressorInv.length; i++) {
+			if (compressorInv[i] == null) {
+				continue;
+			}
+			NBTTagCompound nbtTC = new NBTTagCompound();
+			nbtTC.setInteger("Slot", i);
+			compressorInv[i].writeToNBT(nbtTC);
+			nbtTL.appendTag(nbtTC);
+		}
+		tagCompound.setTag(this.getName(), nbtTL);
+
 		return tagCompound;
 	}
 

@@ -29,13 +29,13 @@ public class TESRFurnace extends TileEntitySpecialRenderer<TileEntityFurnace> {
 	private TileEntityFurnace furnaceTE;
 	
 	public TESRFurnace() {
-		ticks = 0;
-		rotation = 90F;
+		this.ticks = 0;
+		this.rotation = 90F;
 	}
 
 	@Override
 	public void renderTileEntityAt(TileEntityFurnace te, double x, double y, double z, float partialTicks, int destroyStage) {
-		furnaceTE = te;
+		this.furnaceTE = te;
         this.beamSegments.clear();
         this.beamSegments.add(new TileEntityBeacon.BeamSegment(EntitySheep.getDyeRgb(EnumDyeColor.WHITE)));
         if (getWorld().canBlockSeeSky(getTE().getPos()) && te.getInputSlotStack() != null) {

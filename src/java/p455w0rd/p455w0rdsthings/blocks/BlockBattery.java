@@ -13,6 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -21,9 +22,12 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import p455w0rd.p455w0rdsthings.Globals;
 import p455w0rd.p455w0rdsthings.blocks.tileentities.TileEntityBattery;
 import p455w0rd.p455w0rdsthings.client.render.TESRBattery;
+import p455w0rd.p455w0rdsthings.handlers.GuiHandler;
 import p455w0rd.p455w0rdsthings.proxy.CommonProxy;
+import p455w0rd.p455w0rdsthings.util.BlockUtils;
 
 @SuppressWarnings("deprecation")
 public class BlockBattery extends Block implements ITileEntityProvider {
@@ -54,18 +58,27 @@ public class BlockBattery extends Block implements ITileEntityProvider {
 		return new TileEntityBattery();
 	}
 	
+	private TileEntityBattery getTE(World worldIn, BlockPos pos) {
+		return (TileEntityBattery) BlockUtils.getTE(worldIn, pos);
+	}
+	
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileEntity te = worldIn.getTileEntity(pos);
-		if (te != null && !playerIn.isSneaking()) {
-			//
-			return true;
+		if (!worldIn.isRemote) {
+			TileEntityBattery te = getTE(worldIn, pos);
+			if (te != null && !playerIn.isSneaking()) {
+				GuiHandler.launchGui(Globals.GUINUM_BATTERY, playerIn, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			}
+			else if (playerIn.isSneaking()) {
+				//BlockUtils.wrenchBlock(worldIn, pos, state);
+			}
 		}
-		else if (playerIn.isSneaking()) {
-			
-			return true;
+		else {
+			if (playerIn.isSneaking()) {
+				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double) pos.getX(), (double) pos.getY() + 1.0D, (double) pos.getZ(), 0, 0, 0, new int[0]);
+			}
 		}
-		return false;
+		return true;
 	}
 	
 	@SideOnly(Side.CLIENT)

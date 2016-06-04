@@ -5,24 +5,25 @@ import cofh.api.energy.IEnergyHandler;
 import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import cofh.api.energy.IEnergyStorage;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import p455w0rd.p455w0rdsthings.util.BlockUtils;
-import p455w0rd.p455w0rdsthings.util.EnergyUtils;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
-public class TileEntityBattery extends TileEntity implements ITickable, IEnergyHandler, IEnergyReceiver, IEnergyProvider {
+public class TileEntityBattery extends TileEntity implements ITickable, IEnergyHandler, IEnergyReceiver, IEnergyProvider, ISidedInventory {
 
 	protected ItemStack[] batteryInv;
 	IEnergyReceiver[] adjacentHandlers = new IEnergyReceiver[6];
 	protected EnergyStorage energyStorage;
 	boolean cached = false;
+	private final int invSize = 5;
 
 	protected int capacity;
 	protected int maxReceive;
@@ -32,9 +33,10 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		capacity = 6400000;
 		maxReceive = 2000;
 		maxExtract = 2000;
-		batteryInv = new ItemStack[5];
+		batteryInv = new ItemStack[invSize];
 		energyStorage = new EnergyStorage(capacity, maxReceive);
 		this.energyStorage.setEnergyStored(10000);
+		readFromNBT(this.getTileData());
 	}
 	
 	@Override
@@ -42,7 +44,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		super.readFromNBT(tagCompound);
 		NBTTagCompound energyTag = tagCompound.getCompoundTag("Energy");
 		this.energyStorage.readFromNBT(energyTag);
-/*
+
 		NBTTagList nbtTL = tagCompound.getTagList(this.getName(), 10);
 		for (int i = 0; i < nbtTL.tagCount(); i++) {
 			NBTTagCompound nbtTC = (NBTTagCompound) nbtTL.getCompoundTagAt(i);
@@ -52,7 +54,6 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 			int slot = nbtTC.getInteger("Slot");
 			this.batteryInv[slot] = ItemStack.loadItemStackFromNBT(nbtTC);
 		}
-		*/
 	}
 
 	@Override
@@ -61,7 +62,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		NBTTagCompound energyTag = new NBTTagCompound();
 		this.energyStorage.writeToNBT(energyTag);
 		tagCompound.setTag("Energy", energyTag);
-/*
+
 		NBTTagList nbtTL = new NBTTagList();
 		for (int i = 0; i < this.batteryInv.length; i++) {
 			if (batteryInv[i] == null) {
@@ -73,7 +74,7 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 			nbtTL.appendTag(nbtTC);
 		}
 		tagCompound.setTag(this.getName(), nbtTL);	
-		*/	
+
 		return tagCompound;
 	}
 /*
@@ -129,51 +130,8 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 		}
 		handleSendingEnergy();
 		handleReceivingEnergy();
-		if (!this.cached) {
-			updateAdjacentHandlers();
-		}
-		//markDirty();
-		//final IBlockState state = getWorld().getBlockState(getPos());
-		//getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-
 	}
 
-	public void onNeighborTileChange(int x, int y, int z) {
-		updateAdjacentHandler(x, y, z);
-	}
-
-	protected void updateAdjacentHandlers() {
-		if (worldObj.isRemote) {
-			return;
-		}
-		for (int i = 0; i < 6; i++) {
-			TileEntity localTileEntity = BlockUtils.getAdjacentTileEntity(this, i);
-
-			if (EnergyUtils.isEnergyReceiverFromSide(localTileEntity, EnumFacing.values()[(i ^ 0x1)])) {
-				this.adjacentHandlers[i] = ((IEnergyReceiver) localTileEntity);
-			}
-			else {
-				this.adjacentHandlers[i] = null;
-			}
-		}
-		this.cached = true;
-	}
-
-	protected void updateAdjacentHandler(int x, int y, int z) {
-		if (worldObj.isRemote) {
-			return;
-		}
-		int i = BlockUtils.determineAdjacentSide(this, x, y, z);
-
-		TileEntity localTileEntity = this.worldObj.getTileEntity(new BlockPos(x, y, z));
-
-		if (EnergyUtils.isEnergyReceiverFromSide(localTileEntity, EnumFacing.values()[(i ^ 0x1)])) {
-			this.adjacentHandlers[i] = ((IEnergyReceiver) localTileEntity);
-		}
-		else {
-			this.adjacentHandlers[i] = null;
-		}
-	}
 
 	public void setEnergyStored(int energy) {
 		this.energyStorage.setEnergyStored(energy);
@@ -237,5 +195,125 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 				}
 			}
 		}
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+	}
+
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return false;
+	}
+
+	@Override
+	public ITextComponent getDisplayName() {
+		return new TextComponentString(getName());
+	}
+
+	public int getMaxExtract() {
+		return maxExtract;
+	}
+
+	@Override
+	public int[] getSlotsForFace(EnumFacing side) {
+		int[] validSlots = { 0, 1 };
+		return validSlots;
+	}
+
+	@Override
+	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+		if (index == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+		if (index == 1) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int getSizeInventory() {
+		// TODO Auto-generated method stub
+		return batteryInv.length;
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int index) {
+		// TODO Auto-generated method stub
+		return batteryInv[index];
+	}
+
+	@Override
+	public ItemStack decrStackSize(int index, int count) {
+		ItemStack stack = ((ItemStack) batteryInv[index]);
+		if (stack.stackSize >= count) {
+			setInventorySlotContents(index, null);
+		}
+		else {
+			setInventorySlotContents(index, new ItemStack(stack.getItem(), count));
+			stack.stackSize -= count;
+		}
+		return stack;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		ItemStack itemStack = getStackInSlot(index);
+		if (itemStack != null) {
+			setInventorySlotContents(index, null);
+		}
+		return itemStack;
+	}
+
+	@Override
+	public void setInventorySlotContents(int index, ItemStack stack) {
+		// TODO Auto-generated method stub
+		batteryInv[index] = stack;
+	}
+
+	@Override
+	public int getInventoryStackLimit() {
+		// TODO Auto-generated method stub
+		return 64;
+	}
+
+	@Override
+	public boolean isUseableByPlayer(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int index, ItemStack stack) {
+		// TODO Auto-generated method stub
+		return stack.getItem() instanceof IEnergyHandler;
 	}
 }

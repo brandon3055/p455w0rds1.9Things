@@ -41,8 +41,7 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 		furnaceInv = new ItemStack[2];
 		readFromNBT(this.getTileData());
 	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	/*
 	@Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound nbtTag = new NBTTagCompound();
@@ -54,7 +53,7 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         this.readFromNBT(packet.getNbtCompound());
     }
-    
+    */
     @SideOnly(Side.CLIENT)
     @Override
     public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox()
@@ -78,8 +77,15 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
-		((ItemStack) furnaceInv[index]).stackSize -= count;
-		return null;
+		ItemStack stack = ((ItemStack) furnaceInv[index]);
+		if (stack.stackSize >= count) {
+			setInventorySlotContents(index, null);
+		}
+		else {
+			setInventorySlotContents(index, new ItemStack(stack.getItem(), count));
+			stack.stackSize -= count;
+		}
+		return stack;
 	}
 
 	@Override

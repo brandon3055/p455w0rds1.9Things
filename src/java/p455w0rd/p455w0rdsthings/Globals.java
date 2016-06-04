@@ -12,6 +12,7 @@ public class Globals {
 	public static int GUINUM_DANKNULL = ++guiIndex;
 	public static int GUINUM_COMPRESSOR = ++guiIndex;
 	public static int GUINUM_FURNACE = ++guiIndex;
+	public static int GUINUM_BATTERY = ++guiIndex;
 	
 	public static boolean GUI_DANKNULL_ISOPEN = false;
 }
