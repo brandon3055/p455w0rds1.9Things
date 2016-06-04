@@ -37,7 +37,7 @@ public class ItemPShield extends Item {
 		GameRegistry.register(this);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(999);
-		this.setCreativeTab(CreativeTabs.tabCombat);
+		this.setCreativeTab(CreativeTabs.CREATIVE_TAB_ARRAY[8]);
 		this.setCreativeTab(CommonProxy.creativeTab);
 		addPropertyOverride(new ResourceLocation(Globals.MODID, "blocking"), new IItemPropertyGetter() {
 			@Override
@@ -73,7 +73,7 @@ public class ItemPShield extends Item {
 
 	@Override
 	public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
-		return repair.getItem() == net.minecraft.init.Items.diamond ? true : super.getIsRepairable(toRepair, repair);
+		return repair.getItem() == net.minecraft.init.Items.DIAMOND ? true : super.getIsRepairable(toRepair, repair);
 	}
 
 	@Override

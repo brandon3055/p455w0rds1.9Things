@@ -4,7 +4,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 
@@ -23,9 +22,8 @@ public class TileEntityDankNull extends TileEntity {
 		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-    public Packet getDescriptionPacket() {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         // Prepare a packet for syncing our TE to the client. Since we only have to sync the stack
         // and that's all we have we just write our entire NBT here. If you have a complex
         // tile entity that doesn't need to have all information on the client you can write
@@ -52,12 +50,13 @@ public class TileEntityDankNull extends TileEntity {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         if (stack != null) {
             NBTTagCompound tagCompound = new NBTTagCompound();
             stack.writeToNBT(tagCompound);
             compound.setTag("item", tagCompound);
         }
+        return compound;
     }
 }

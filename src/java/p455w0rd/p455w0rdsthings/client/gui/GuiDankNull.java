@@ -139,7 +139,8 @@ public class GuiDankNull extends GuiContainer {
 		return ri;
 	}
 
-	private void drawSlot(final Slot slotIn) {
+	@Override
+	public void drawSlot(final Slot slotIn) {
 		int i = slotIn.xDisplayPosition;
 		int j = slotIn.yDisplayPosition;
 		ItemStack itemstack = slotIn.getStack();
@@ -283,7 +284,7 @@ public class GuiDankNull extends GuiContainer {
 		GlStateManager.disableLighting();
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
-		this.mc.getTextureManager().bindTexture(optionsBackground);
+		this.mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
 		vertexbuffer.pos(0.0D, (double) this.height, 0.0D).tex(0.0D, (double) ((float) this.height / 32.0F + (float) tint)).color(64, 64, 64, 255).endVertex();
@@ -457,7 +458,8 @@ public class GuiDankNull extends GuiContainer {
 		}
 	}
 
-	private boolean isMouseOverSlot(Slot slotIn, int mouseX, int mouseY) {
+	@Override
+	public boolean isMouseOverSlot(Slot slotIn, int mouseX, int mouseY) {
 		return this.isPointInRegion(slotIn.xDisplayPosition, slotIn.yDisplayPosition, 16, 16, mouseX, mouseY);
 	}
 

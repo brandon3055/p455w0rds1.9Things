@@ -20,7 +20,7 @@ import p455w0rd.p455w0rdsthings.proxy.CommonProxy;
 public class PartTerminal extends Block {
 
 	public PartTerminal() {
-		super(Material.glass);
+		super(Material.GLASS);
 		setUnlocalizedName("partTerminal");
 		setRegistryName("partTerminal");
 		this.setCreativeTab(CommonProxy.creativeTab);
@@ -57,10 +57,9 @@ public class PartTerminal extends Block {
     }
     
     @Override
-    public boolean onBlockEventReceived(World worldIn, BlockPos pos, IBlockState state, int eventID, int eventParam)
-    {
-    	super.onBlockEventReceived(worldIn, pos, state, eventID, eventParam);
+	public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int eventID, int eventParam) {
+		super.eventReceived(state, worldIn, pos, eventID, eventParam);
 		return true;
-    }
+	}
 
 }

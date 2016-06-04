@@ -68,7 +68,7 @@ public class EventsHandler {
 
 				activeItemStack = null;
 				if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-					player.playSound(SoundEvents.item_shield_break, 0.8F, 0.8F + player.worldObj.rand.nextFloat() * 0.4F);
+					player.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + player.worldObj.rand.nextFloat() * 0.4F);
 				}
 			}
 		}
@@ -80,7 +80,7 @@ public class EventsHandler {
 	    if (state.getBlock() == ModBlocks.xpJuiceBlock) {
 	    	if (((IFluidBlock) state.getBlock()).getFilledPercentage(event.getWorld(), event.getTarget().getBlockPos()) == 1) {
 	    		event.setFilledBucket(new ItemStack(ModItems.xpJuiceBucket));
-	    		event.getWorld().setBlockState(event.getTarget().getBlockPos(), Blocks.air.getDefaultState(), 11);
+	    		event.getWorld().setBlockState(event.getTarget().getBlockPos(), Blocks.AIR.getDefaultState(), 11);
 	    		event.setResult(Result.ALLOW);
 	    		return;
 	    	}
@@ -100,7 +100,7 @@ public class EventsHandler {
             {
                 f12 = (float)EnchantmentHelper.getRespirationModifier((EntityLivingBase)entity) * 0.2F;
 
-                if (((EntityLivingBase)entity).isPotionActive(MobEffects.waterBreathing))
+                if (((EntityLivingBase)entity).isPotionActive(MobEffects.WATER_BREATHING))
                 {
                     f12 = f12 * 0.3F + 0.6F;
                 }

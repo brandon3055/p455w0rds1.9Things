@@ -19,7 +19,7 @@ public class ItemWirelessReceiver extends Item {
 		setUnlocalizedName(this.name);
 		GameRegistry.register(this);
 		this.setMaxStackSize(1);
-		this.setCreativeTab(CreativeTabs.tabCombat);
+		this.setCreativeTab(CreativeTabs.CREATIVE_TAB_ARRAY[4]);
 		this.setCreativeTab(CommonProxy.creativeTab);
 	}
 

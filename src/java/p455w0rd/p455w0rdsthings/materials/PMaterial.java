@@ -6,7 +6,7 @@ import net.minecraft.block.material.MaterialLiquid;
 
 public class PMaterial extends Material {
 	
-	public static final Material xpjuice = (new MaterialLiquid(MapColor.waterColor));
+	public static final Material xpjuice = (new MaterialLiquid(MapColor.WATER));
 
 	public PMaterial(MapColor color) {
 		super(color);

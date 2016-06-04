@@ -44,7 +44,7 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-    public Packet getDescriptionPacket() {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound nbtTag = new NBTTagCompound();
         this.writeToNBT(nbtTag);
         return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
@@ -291,7 +291,7 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		if (tagCompound == null) {
 			tagCompound = new NBTTagCompound();
 		}
@@ -313,6 +313,7 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
 		tagCompound.setTag(this.getName(), nbtTL);
 		
 		super.writeToNBT(tagCompound);
+		return tagCompound;
 	}
 	
 	@SideOnly(Side.CLIENT)

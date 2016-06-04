@@ -23,7 +23,7 @@ public class ModBlocks {
 		compressorBlock = new BlockCompressor();
 		batteryBlock = new BlockBattery();
 		furnaceBlock = new BlockFurnace();
-		xpJuiceBlock = new BlockXpJuice(ModFluids.xpJuice, Material.water);
+		xpJuiceBlock = new BlockXpJuice(ModFluids.xpJuice, Material.WATER);
 	}
 	
 	@SideOnly(Side.CLIENT)

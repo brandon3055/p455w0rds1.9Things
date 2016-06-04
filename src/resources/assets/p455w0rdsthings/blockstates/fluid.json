@@ -1,0 +1,43 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "forge:fluid"
+	},
+	"variants": {
+		"xpjuice": [
+			{
+				"custom": {
+					"fluid": "xpjuice"
+				}
+			}
+		],
+		"normalgas": [
+			{
+				"custom": {
+					"fluid": "normalgas"
+				}
+			}
+		],
+		"static": [
+			{
+				"custom": {
+					"fluid": "static"
+				}
+			}
+		],
+		"staticgas": [
+			{
+				"custom": {
+					"fluid": "staticgas"
+				}
+			}
+		],
+		"finite": [
+			{
+				"custom": {
+					"fluid": "finite"
+				}
+			}
+		]
+	}
+}

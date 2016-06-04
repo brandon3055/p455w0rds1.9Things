@@ -65,8 +65,8 @@ public class DankNullRenderer implements IItemRenderer {
 		IBakedModel holderModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(new ItemStack(ModItems.dankNullHolder, 1, item.getItemDamage()));
 
 		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
-		textureManager.bindTexture(TextureMap.locationBlocksTexture);
-		textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
+		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
 
 		if (containedStack != null) {
 			IBakedModel containedItemModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(containedStack);
@@ -204,8 +204,8 @@ public class DankNullRenderer implements IItemRenderer {
 		 * GlStateManager.disableAlpha();
 		 */
 
-		textureManager.bindTexture(TextureMap.locationBlocksTexture);
-		textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 	}
 
 	private boolean isStackInHand(ItemStack itemStackIn) {
@@ -320,7 +320,7 @@ public class DankNullRenderer implements IItemRenderer {
 		GlStateManager.enableLighting();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 	
 	private void renderEffect2(IBakedModel model) {
@@ -353,7 +353,7 @@ public class DankNullRenderer implements IItemRenderer {
 		GlStateManager.enableLighting();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 
 	@Override

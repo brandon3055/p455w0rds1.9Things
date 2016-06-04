@@ -59,7 +59,7 @@ public class ContainerDankNull extends Container {
 	public void onContainerClosed(EntityPlayer playerIn) {
 		InventoryPlayer inventoryplayer = playerIn.inventory;
 		if (inventoryplayer.getItemStack() != null) {
-			playerIn.dropPlayerItemWithRandomChoice(inventoryplayer.getItemStack(), false);
+			playerIn.dropItem(inventoryplayer.getItemStack(), false);
 			inventoryplayer.setItemStack((ItemStack) null);
 		}
 		ItemUtils.reArrangeStacks(dankNullStack);
@@ -327,7 +327,7 @@ public class ContainerDankNull extends Container {
 	}
 
 	@Override
-	public ItemStack func_184996_a(int index, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+	public ItemStack slotClick(int index, int dragType, ClickType clickTypeIn, EntityPlayer player) {
 		System.out.println("\nMOUSE INFO\ndragType: " + dragType + "\nclickType: " + clickTypeIn);
 
 		// we only handle stuff in our custom inventory
@@ -339,12 +339,12 @@ public class ContainerDankNull extends Container {
 			if (index == -999) {
 				if (inventoryplayer.getItemStack() != null) {
 					if (dragType == 0) {
-						player.dropPlayerItemWithRandomChoice(inventoryplayer.getItemStack(), true);
+						player.dropItem(inventoryplayer.getItemStack(), true);
 						inventoryplayer.setItemStack((ItemStack) null);
 					}
 
 					if (dragType == 1) {
-						player.dropPlayerItemWithRandomChoice(inventoryplayer.getItemStack().splitStack(1), true);
+						player.dropItem(inventoryplayer.getItemStack().splitStack(1), true);
 
 						if (inventoryplayer.getItemStack().stackSize == 0) {
 							inventoryplayer.setItemStack((ItemStack) null);
@@ -422,7 +422,7 @@ public class ContainerDankNull extends Container {
 			}
 		}
 		else {
-			return super.func_184996_a(index, dragType, clickTypeIn, player);
+			return super.slotClick(index, dragType, clickTypeIn, player);
 		}
 		return null;
 	}

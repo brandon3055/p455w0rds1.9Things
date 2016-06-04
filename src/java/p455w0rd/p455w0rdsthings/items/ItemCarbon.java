@@ -19,7 +19,7 @@ public class ItemCarbon extends Item {
 		GameRegistry.register(this);
 		setMaxStackSize(64);
 		setMaxDamage(0);
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(CreativeTabs.CREATIVE_TAB_ARRAY[4]);
 		setCreativeTab(CommonProxy.creativeTab);
 	}
 	

@@ -27,6 +27,7 @@ import p455w0rd.p455w0rdsthings.handlers.GuiHandler;
 import p455w0rd.p455w0rdsthings.proxy.CommonProxy;
 import p455w0rd.p455w0rdsthings.util.ItemUtils;
 
+@SuppressWarnings("deprecation")
 public class ItemDankNull extends Item {
 
 	private final String name = "dankNull";
@@ -37,7 +38,7 @@ public class ItemDankNull extends Item {
 		GameRegistry.register(this);
 		setMaxStackSize(1);
 		setMaxDamage(0);
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(CreativeTabs.CREATIVE_TAB_ARRAY[4]);
 		setCreativeTab(CommonProxy.creativeTab);
 	}
 
@@ -138,7 +139,7 @@ public class ItemDankNull extends Item {
 			IBlockState iblockstate = worldIn.getBlockState(pos);
 			Block block = iblockstate.getBlock();
 
-			if (block.isReplaceable(worldIn, pos) && block == Blocks.snow_layer) {
+			if (block.isReplaceable(worldIn, pos) && block == Blocks.SNOW_LAYER) {
 				facing = EnumFacing.UP;
 			}
 			else if (!block.isReplaceable(worldIn, pos)) {

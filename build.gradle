@@ -9,7 +9,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -35,7 +35,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20160312"
+    mappings = "snapshot_20160518"
 	useDepAts = true
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
@@ -46,16 +46,21 @@ repositories {
 }
 
 dependencies {
-	deobfCompile "mezz.jei:jei_1.9:+"
-	compile "codechicken:CodeChickenLib:1.9-2.0.1.30:deobf"
+	deobfCompile "mezz.jei:jei_1.9.4:+"
+    deobfCompile "codechicken:CodeChickenLib:1.9.4-2.0.2.37:deobf"
 }
 
 processResources
 {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
         expand 'version': project.version, 'mcversion': minecraft_version
-    } exclude 'mcmod.info'
+    }
+	from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
 }
 def commonManifest = {
     attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'

@@ -82,7 +82,7 @@ public class DankNullSlot extends Slot {
 
 	@SideOnly(Side.CLIENT)
 	public ResourceLocation getBackgroundLocation() {
-		return (backgroundLocation == null ? TextureMap.locationBlocksTexture : backgroundLocation);
+		return (backgroundLocation == null ? TextureMap.LOCATION_BLOCKS_TEXTURE : backgroundLocation);
 	}
 
 	@SideOnly(Side.CLIENT)

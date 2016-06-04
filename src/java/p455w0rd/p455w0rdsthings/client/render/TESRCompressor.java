@@ -32,11 +32,27 @@ import p455w0rd.p455w0rdsthings.items.ItemDankNull;
 public class TESRCompressor extends TileEntitySpecialRenderer<TileEntityCompressor> {
 
 	private float rotation;
-	private static float ticks = 0;
+	private float ticks = 0;
 	private boolean rev = false;
 
 	@Override
 	public void renderTileEntityAt(TileEntityCompressor te, double x, double y, double z, float partialTicks, int destroyStage) {
+		if (!rev) {
+			if (ticks < 1000) {
+				ticks += 0.5;
+			}
+			else {
+				rev = true;
+			}
+		}
+		else {
+			if (ticks > 0) {
+				ticks -= 0.5;
+			}
+			else {
+				rev = false;
+			}
+		}
 
 		GlStateManager.pushAttrib();
 		GlStateManager.pushMatrix();
@@ -272,7 +288,7 @@ public class TESRCompressor extends TileEntitySpecialRenderer<TileEntityCompress
 		GlStateManager.enableLighting();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 
 	private void renderEffect2(IBakedModel model) {
@@ -305,27 +321,12 @@ public class TESRCompressor extends TileEntitySpecialRenderer<TileEntityCompress
 		GlStateManager.enableLighting();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 
 	@SubscribeEvent
 	public void tickEvent(RenderTickEvent e) {
-		if (!rev) {
-			if (ticks < 1000) {
-				ticks += 0.5;
-			}
-			else {
-				rev = true;
-			}
-		}
-		else {
-			if (ticks > 0) {
-				ticks -= 0.5;
-			}
-			else {
-				rev = false;
-			}
-		}
+
 	}
 
 }

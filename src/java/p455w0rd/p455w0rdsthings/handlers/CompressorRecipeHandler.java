@@ -9,7 +9,7 @@ import p455w0rd.p455w0rdsthings.recipes.CompressorRecipeRegistry;
 
 public class CompressorRecipeHandler {
 	
-	private final ItemStack coalBlockStack = new ItemStack(Item.getItemFromBlock(Blocks.coal_block), 1);
+	private final ItemStack coalBlockStack = new ItemStack(Item.getItemFromBlock(Blocks.COAL_BLOCK), 1);
 	private final ItemStack carbonStack = new ItemStack(ModItems.carbonItem, 1);
 	
 	public void addRecipes() {

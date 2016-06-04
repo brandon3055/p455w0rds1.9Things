@@ -91,7 +91,7 @@ public class TESRFurnace extends TileEntitySpecialRenderer<TileEntityFurnace> {
 	public void renderBeacon(double p_188206_1_, double p_188206_3_, double p_188206_5_, double p_188206_7_, double p_188206_9_, List<TileEntityBeacon.BeamSegment> p_188206_11_, double p_188206_12_)
     {
         GlStateManager.alphaFunc(516, 0.1F);
-        this.bindTexture(TileEntityBeaconRenderer.beaconBeam);
+        this.bindTexture(TileEntityBeaconRenderer.TEXTURE_BEACON_BEAM);
 
         if (p_188206_9_ > 0.0D)
         {

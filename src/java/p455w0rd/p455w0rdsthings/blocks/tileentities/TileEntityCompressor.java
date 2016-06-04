@@ -2,23 +2,22 @@ package p455w0rd.p455w0rdsthings.blocks.tileentities;
 
 import java.util.List;
 
-import cofh.api.energy.IEnergyConnection;
+import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import p455w0rd.p455w0rdsthings.recipes.CompressorRecipeRegistry;
@@ -27,48 +26,47 @@ import p455w0rd.p455w0rdsthings.util.ItemUtils;
 public class TileEntityCompressor extends TileEntity implements ITickable, ISidedInventory, IEnergyReceiver {
 
 	protected ItemStack[] compressorInv;
-	protected int energy;
+	protected int numSlots = 3;
 	protected int capacity;
 	protected int maxReceive;
 	protected int maxExtract;
+	protected EnergyStorage energyStorage;
 	private boolean isProcessing;
 	private float pctCompleted;
-	
+
 	public TileEntityCompressor() {
 		capacity = 1600000;
 		maxReceive = 200;
 		maxExtract = 200;
-		compressorInv = new ItemStack[2];
-		readFromNBT(this.getTileData());
+		compressorInv = new ItemStack[numSlots];
+		energyStorage = new EnergyStorage(capacity, maxReceive);
 	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-    public Packet getDescriptionPacket() {
-        NBTTagCompound nbtTag = new NBTTagCompound();
-        this.writeToNBT(nbtTag);
-        return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
-    }
 
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        this.readFromNBT(packet.getNbtCompound());
-    }
-    
-    @SideOnly(Side.CLIENT)
-    @Override
-    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox()
-    {
-        return INFINITE_EXTENT_AABB;
-    }
-	
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		NBTTagCompound nbtTag = new NBTTagCompound();
+		this.writeToNBT(nbtTag);
+		return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+		this.readFromNBT(packet.getNbtCompound());
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
+		return INFINITE_EXTENT_AABB;
+	}
+
 	public String getName() {
 		return "compressorBlock";
 	}
 
 	@Override
 	public int getSizeInventory() {
-		return 2;
+		return numSlots;
 	}
 
 	@Override
@@ -78,15 +76,23 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
-		((ItemStack) compressorInv[index]).stackSize -= count;
-		return null;
+		ItemStack stack = ((ItemStack) compressorInv[index]);
+		if (stack.stackSize >= count) {
+			setInventorySlotContents(index, null);
+		}
+		else {
+			setInventorySlotContents(index, new ItemStack(stack.getItem(), count));
+			stack.stackSize -= count;
+		}
+		return stack;
 	}
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
 		ItemStack itemStack = getStackInSlot(index);
-		if (itemStack != null)
+		if (itemStack != null) {
 			setInventorySlotContents(index, null);
+		}
 		return itemStack;
 	}
 
@@ -138,7 +144,7 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return null;
+		return new TextComponentString(getName());
 	}
 
 	@Override
@@ -148,18 +154,22 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 
 	@Override
 	public int getEnergyStored(EnumFacing from) {
-		return energy;
+		return energyStorage.getEnergyStored();
 	}
-	
+
 	public int getEnergy() {
-		return energy;
+		return getEnergyStored(EnumFacing.DOWN);
+	}
+
+	public int getMaxCapacity() {
+		return getMaxEnergyStored(EnumFacing.DOWN);
 	}
 
 	@Override
 	public int getMaxEnergyStored(EnumFacing from) {
-		return capacity;
+		return energyStorage.getMaxEnergyStored();
 	}
-	
+
 	public int getMaxExtract() {
 		return maxExtract;
 	}
@@ -177,13 +187,6 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 		}
 		return false;
 	}
-	
-	public int useEnergy(int amount) {
-		if (getEnergy() >= amount) {
-			return setEnergyStored(getEnergy() - amount);
-		}
-		return -1;
-	}
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
@@ -194,69 +197,54 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 	}
 
 	@Override
-	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
-		int energyReceived = Math.min(capacity - energy, Math.min(this.maxReceive, maxReceive));
-
-		if (!simulate) {
-			energy += energyReceived;
-		}
-		return energyReceived;
+	public int receiveEnergy(EnumFacing from, int maxExtract, boolean simulate) {
+		return energyStorage.receiveEnergy(maxExtract, simulate);
 	}
 
-	public int setEnergyStored(int energy) {
-		this.energy = energy;
-
-		if (this.energy > capacity) {
-			this.energy = capacity;
-		} else if (this.energy < 0) {
-			this.energy = 0;
-		}
-		return this.energy;
-	}
-	
 	@Override
 	public void update() {
 		handleReceivingEnergy();
+		/*
+		markDirty();
 		final IBlockState state = getWorld().getBlockState(getPos());
 		getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-		markDirty();
+		*/
 	}
 
 	private void handleReceivingEnergy() {
 		if (!worldObj.isRemote) {
-			int energyStored = this.energy;
-			int maxEnergy = this.capacity;
-			if (energyStored >= maxEnergy) {
+			if (getEnergy() >= getMaxCapacity()) {
 				return;
 			}
+			for (EnumFacing dir : EnumFacing.values()) {
+				BlockPos targetBlock = getPos().add(dir.getDirectionVec());
 
-			for (EnumFacing facing : EnumFacing.values()) {
-				BlockPos pos = getPos().offset(facing);
-				TileEntity te = worldObj.getTileEntity(pos);
-				if (te instanceof IEnergyProvider) {
-					IEnergyConnection connection = (IEnergyConnection) te;
-					EnumFacing opposite = facing.getOpposite();
-					if (connection.canConnectEnergy(opposite)) {
-						int rfToGet = 200 <= energyStored ? 200 : energyStored;
-						int received = receiveEnergy(facing, rfToGet, false);
-						((IEnergyProvider) te).extractEnergy(EnumFacing.DOWN, received, false);
-						if (energyStored >= maxEnergy) {
-							break;
+				TileEntity tile = worldObj.getTileEntity(targetBlock);
+				if (tile instanceof IEnergyProvider) {
+					IEnergyProvider provider = (IEnergyProvider) tile;
+
+					if (provider.canConnectEnergy(dir.getOpposite())) {
+						int toget = energyStorage.receiveEnergy(this.maxReceive, true);
+						int received = ((IEnergyProvider) tile).extractEnergy(dir.getOpposite(), toget, false);
+						// TODO: need this? It doesn't really *need* state saved
+						if (received > 0) {
+							this.markDirty();
 						}
+						energyStorage.receiveEnergy(received, false);
 					}
 				}
 			}
 		}
 	}
-	
+
 	public boolean hasEnergy() {
 		return getEnergy() > 0;
 	}
-	
+
 	private void handleProcessing() {
 		if (hasEnergy()) {
 			if (getOutputSlotStack() == null || getOutputSlotStack().stackSize < getOutputSlotStack().getMaxStackSize()) {
-				
+
 			}
 		}
 	}
@@ -264,20 +252,17 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 	public ItemStack getInputSlotStack() {
 		return compressorInv[0];
 	}
-	
+
 	public ItemStack getOutputSlotStack() {
 		return compressorInv[1];
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
-		if (tagCompound == null) {
-			return;
-		}
-		if (tagCompound.hasKey("Energy")) {
-			setEnergyStored(tagCompound.getInteger("Energy"));
-		}
-		
+		super.readFromNBT(tagCompound);
+		NBTTagCompound energyTag = tagCompound.getCompoundTag("Energy");
+		this.energyStorage.readFromNBT(energyTag);
+
 		NBTTagList nbtTL = tagCompound.getTagList(this.getName(), 10);
 		for (int i = 0; i < nbtTL.tagCount(); i++) {
 			NBTTagCompound nbtTC = (NBTTagCompound) nbtTL.getCompoundTagAt(i);
@@ -287,19 +272,15 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 			int slot = nbtTC.getInteger("Slot");
 			this.compressorInv[slot] = ItemStack.loadItemStackFromNBT(nbtTC);
 		}
-		super.readFromNBT(tagCompound);
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
-		if (tagCompound == null) {
-			tagCompound = new NBTTagCompound();
-		}
-		if (energy < 0) {
-			energy = 0;
-		}
-		tagCompound.setInteger("Energy", energy);
-		
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		NBTTagCompound energyTag = new NBTTagCompound();
+		this.energyStorage.writeToNBT(energyTag);
+		tagCompound.setTag("Energy", energyTag);
+
 		NBTTagList nbtTL = new NBTTagList();
 		for (int i = 0; i < this.compressorInv.length; i++) {
 			if (compressorInv[i] == null) {
@@ -311,16 +292,14 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 			nbtTL.appendTag(nbtTC);
 		}
 		tagCompound.setTag(this.getName(), nbtTL);
-		
-		super.writeToNBT(tagCompound);
+		return tagCompound;
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@Override
-    public double getMaxRenderDistanceSquared()
-    {
-        return 65536.0D;
-    }
+	public double getMaxRenderDistanceSquared() {
+		return 65536.0D;
+	}
 
 	@Override
 	public boolean isItemValidForSlot(int index, ItemStack stack) {

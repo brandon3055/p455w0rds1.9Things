@@ -40,12 +40,16 @@ public class BlockXpJuice extends BlockFluidClassic implements IFluidBlock {
 	public BlockXpJuice(Fluid fluid, Material material) {
 		super(fluid, material);
 		setLightLevel(1.0F);
-		stack = new FluidStack(fluid, fluid.getDensity());
+		stack = new FluidStack(fluid, 10000);
 		setRegistryName(this.getFluid().getName());
 		setUnlocalizedName(this.getFluid().getName());
 		setCreativeTab(CommonProxy.creativeTab);
 		GameRegistry.registerBlock(this);
 		fluid.setBlock(this);
+	}
+	
+	public FluidStack getStack() {
+		return stack;
 	}
 
 	public void initModel() {
@@ -88,7 +92,7 @@ public class BlockXpJuice extends BlockFluidClassic implements IFluidBlock {
 
 		if (i > 0 && i < 8) {
 			if (rand.nextInt(64) == 0) {
-				pos.playSound(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D, SoundEvents.block_water_ambient, SoundCategory.BLOCKS, rand.nextFloat() * 0.25F + 0.75F, rand.nextFloat() + 0.5F, false);
+				pos.playSound(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D, SoundEvents.BLOCK_WATER_AMBIENT, SoundCategory.BLOCKS, rand.nextFloat() * 0.25F + 0.75F, rand.nextFloat() + 0.5F, false);
 			}
 		}
 		else if (rand.nextInt(10) == 0) {
@@ -144,7 +148,7 @@ public class BlockXpJuice extends BlockFluidClassic implements IFluidBlock {
 
 	public int getQuantaValue(IBlockAccess world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
-		if (state.getBlock() == Blocks.air) {
+		if (state.getBlock() == Blocks.AIR) {
 			return 0;
 		}
 

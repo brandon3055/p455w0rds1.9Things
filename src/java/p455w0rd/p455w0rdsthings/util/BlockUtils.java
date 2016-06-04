@@ -9,11 +9,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockUtils {
-	
+
 	public static TileEntity getTE(World worldIn, BlockPos pos) {
 		return worldIn.getTileEntity(pos);
 	}
@@ -22,7 +23,7 @@ public class BlockUtils {
 		if (!worldIn.isRemote) {
 			TileEntity te = getTE(worldIn, pos);
 			ItemStack blockStack = new ItemStack(Item.getItemFromBlock(worldIn.getBlockState(pos).getBlock()), 1);
-			
+
 			if (te.getBlockMetadata() > 0) {
 				blockStack.setItemDamage(te.getBlockMetadata());
 			}
@@ -70,5 +71,16 @@ public class BlockUtils {
 			}
 		}
 	}
-	
+
+	public static TileEntity getAdjacentTileEntity(TileEntity te, int side) {
+		World w = te.getWorld();
+		EnumFacing s = EnumFacing.values()[side];
+		BlockPos pos = new BlockPos(te.getPos().offset(s));
+		return w.getTileEntity(pos);
+	}
+
+	public static int determineAdjacentSide(TileEntity te, int x, int y, int z) {
+		return x > te.getPos().getX() ? 5 : z < te.getPos().getZ() ? 2 : z > te.getPos().getZ() ? 3 : y < te.getPos().getY() ? 0 : y > te.getPos().getY() ? 1 : 4;
+	}
+
 }

@@ -38,7 +38,7 @@ public class BlockDankNull extends Block implements ITileEntityProvider {
 	private String name = "dankNullBlock";
 	
 	public BlockDankNull() {
-		super(Material.glass);
+		super(Material.GLASS);
 		setUnlocalizedName(name);
 		setRegistryName(name);
 		setCreativeTab(CommonProxy.creativeTab);
@@ -85,8 +85,8 @@ public class BlockDankNull extends Block implements ITileEntityProvider {
 	}
 
 	@Override
-	public boolean onBlockEventReceived(World worldIn, BlockPos pos, IBlockState state, int eventID, int eventParam) {
-		super.onBlockEventReceived(worldIn, pos, state, eventID, eventParam);
+	public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int eventID, int eventParam) {
+		super.eventReceived(state, worldIn, pos, eventID, eventParam);
 		return true;
 	}
 

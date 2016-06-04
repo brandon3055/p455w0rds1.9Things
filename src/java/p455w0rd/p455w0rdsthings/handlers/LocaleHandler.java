@@ -2,6 +2,7 @@ package p455w0rd.p455w0rdsthings.handlers;
 
 import net.minecraft.util.text.translation.I18n;
 
+@SuppressWarnings("deprecation")
 public enum LocaleHandler {
 
 	p455w0rdshield(0);

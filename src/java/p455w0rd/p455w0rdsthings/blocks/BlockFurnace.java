@@ -37,7 +37,7 @@ public class BlockFurnace extends Block implements ITileEntityProvider {
 	private String name = "furnaceBlock";
 
 	public BlockFurnace() {
-		super(Material.rock);
+		super(Material.ROCK);
 		setUnlocalizedName(name);
 		setRegistryName(name);
 		setCreativeTab(CommonProxy.creativeTab);

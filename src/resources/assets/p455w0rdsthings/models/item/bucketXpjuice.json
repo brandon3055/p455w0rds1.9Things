@@ -1,7 +1,7 @@
 {
-    "parent": "builtin/generated",
+    "parent": "item/generated",
     "textures": {
-        "layer0": "enderio:items/bucketXpjuice"
+        "layer0": "p455w0rdsthings:items/bucketXpjuice"
     },
     "display": {
         "thirdperson": {

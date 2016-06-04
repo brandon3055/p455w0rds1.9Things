@@ -25,12 +25,13 @@ import p455w0rd.p455w0rdsthings.blocks.tileentities.TileEntityBattery;
 import p455w0rd.p455w0rdsthings.client.render.TESRBattery;
 import p455w0rd.p455w0rdsthings.proxy.CommonProxy;
 
+@SuppressWarnings("deprecation")
 public class BlockBattery extends Block implements ITileEntityProvider {
 
 	private String name = "batteryBlock";
 
 	public BlockBattery() {
-		super(Material.rock);
+		super(Material.ROCK);
 		setUnlocalizedName(name);
 		setRegistryName(name);
 		setCreativeTab(CommonProxy.creativeTab);
@@ -41,9 +42,10 @@ public class BlockBattery extends Block implements ITileEntityProvider {
 		//GameRegistry.registerTileEntity(TileEntityBattery.class, name);
 	}
 	
+	
 	@Override
-	public boolean onBlockEventReceived(World worldIn, BlockPos pos, IBlockState state, int eventID, int eventParam) {
-		super.onBlockEventReceived(worldIn, pos, state, eventID, eventParam);
+	public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int eventID, int eventParam) {
+		super.eventReceived(state, worldIn, pos, eventID, eventParam);
 		return true;
 	}
 	
