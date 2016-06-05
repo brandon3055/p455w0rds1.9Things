@@ -47,13 +47,20 @@ public class TileEntityCompressor extends TileEntity implements ITickable, ISide
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbtTag = new NBTTagCompound();
 		this.writeToNBT(nbtTag);
-		return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
+		return new SPacketUpdateTileEntity(getPos(), 1, nbtTag);
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 		this.readFromNBT(packet.getNbtCompound());
 	}
+	
+	@Override
+    public NBTTagCompound getUpdateTag() {
+        NBTTagCompound updateTag = super.getUpdateTag();
+        writeToNBT(updateTag);
+        return updateTag;
+    }
 
 	@SideOnly(Side.CLIENT)
 	@Override

@@ -56,6 +56,13 @@ public class TileEntityFurnace extends TileEntity implements ITickable, ISidedIn
         this.readFromNBT(packet.getNbtCompound());
     }
     
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        NBTTagCompound updateTag = super.getUpdateTag();
+        writeToNBT(updateTag);
+        return updateTag;
+    }
+    
     @SideOnly(Side.CLIENT)
     @Override
     public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox()

@@ -80,6 +80,13 @@ public class TileEntityBattery extends TileEntity implements ITickable, IEnergyH
 
 		return tagCompound;
 	}
+	
+	@Override
+    public NBTTagCompound getUpdateTag() {
+        NBTTagCompound updateTag = super.getUpdateTag();
+        writeToNBT(updateTag);
+        return updateTag;
+    }
 
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {

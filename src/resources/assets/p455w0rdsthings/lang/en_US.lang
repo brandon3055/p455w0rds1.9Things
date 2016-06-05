@@ -8,6 +8,7 @@ item.dankNullv5.name=/dank/null/VI
 item.rawCarbon.name=Raw Carbon
 tile.compressorBlock.name=Compressor
 tile.batteryBlock.name=Battery
+tile.furnaceBlock.name=Furnace
 tile.dankNullBlock.name=/dank/null
 tile.partTerminal.name=ME Terminal
 tile.xpjuice.name=Liquid Experience
